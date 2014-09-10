@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6244" systemVersion="13E28" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Conversation" representedClassName="Conversation" syncable="YES">
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="kind" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="removed" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <relationship name="lastMessage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Message" syncable="YES"/>
+        <relationship name="linkedConversations" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Conversation" inverseName="parentConversation" inverseEntity="Conversation" syncable="YES"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Message" inverseName="conversation" inverseEntity="Message" syncable="YES"/>
+        <relationship name="messageTopic" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Message" syncable="YES"/>
+        <relationship name="parentConversation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Conversation" inverseName="linkedConversations" inverseEntity="Conversation" syncable="YES"/>
+        <relationship name="participantIdentifiers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ParticipantIdentifier" inverseName="conversation" inverseEntity="ParticipantIdentifier" syncable="YES"/>
+    </entity>
+    <entity name="Message" representedClassName="Message" syncable="YES">
+        <attribute name="createdDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="creatorIdentifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="hidden" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="kind" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="removed" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <relationship name="conversation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Conversation" inverseName="messages" inverseEntity="Conversation" syncable="YES"/>
+        <relationship name="linkedEvents" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="Message" inverseName="parentMessage" inverseEntity="Message" syncable="YES"/>
+        <relationship name="parentMessage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Message" inverseName="linkedEvents" inverseEntity="Message" syncable="YES"/>
+    </entity>
+    <entity name="ParticipantIdentifier" representedClassName="ParticipantIdentifier" syncable="YES">
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="conversation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Conversation" inverseName="participantIdentifiers" inverseEntity="Conversation" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Conversation" positionX="0" positionY="0" width="128" height="180"/>
+        <element name="Message" positionX="-477" positionY="27" width="128" height="180"/>
+        <element name="ParticipantIdentifier" positionX="-225" positionY="324" width="128" height="73"/>
+    </elements>
+</model>
