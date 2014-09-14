@@ -8,6 +8,8 @@ pod 'ReactiveCocoa', '~> 2.3'
 pod 'BlocksKit', '~> 2.2'
 pod 'LayerKit'
 
+link_with 'CoreDataTester', 'CoreDataTesterTests'
+
 # pod 'Facebook-iOS-SDK', '~> 3.13'
 # pod 'CocoaLibSpotify', '~> 2.4'
 
