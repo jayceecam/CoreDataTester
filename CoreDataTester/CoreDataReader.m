@@ -1,4 +1,3 @@
-//
 //  DataAccessor.m
 //  CoreDataTester
 //
@@ -6,13 +5,13 @@
 //  Copyright (c) 2014 Joe Cerra. All rights reserved.
 //
 
-#import "LayerDataReader.h"
+#import "CoreDataReader.h"
 
 #import "Conversation.h"
 #import "Message.h"
 
 
-@implementation LayerDataReader
+@implementation CoreDataReader
 
 
 - (NSArray*)getRecentConversationsOfKind:(ConversationKind)kind {
@@ -22,7 +21,7 @@
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
     if (kind == CKindAll) {
-        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (parentConversation = NULL)"];
+        request.predicate = [NSPredicate predicateWithFormat:@"(kind != %i) and (removed = FALSE) and (parentConversation = NULL)", CKindUndefined];
     }
     else {
         request.predicate = [NSPredicate predicateWithFormat:@"(kind = %i) and (removed = FALSE) and (parentConversation = NULL)", kind];
@@ -49,6 +48,26 @@
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
     request.predicate = [NSPredicate predicateWithFormat:@"identifier LIKE %@", convoIdentifier];
+    
+    NSError* error;
+    NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
+    if (fetchResults == nil) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    
+    return fetchResults.firstObject;
+}
+
+- (Message*)getMessage:(NSString*)messageIdentifier {
+    
+    // returns message with id
+    
+    NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Message"];
+    
+    request.predicate = [NSPredicate predicateWithFormat:@"identifier LIKE %@", messageIdentifier];
     
     NSError* error;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
@@ -98,7 +117,7 @@
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
     if (kind == CKindAll) {
-        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", userIdentifier];
+        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", CKindUndefined, userIdentifier];
     }
     else {
         request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", kind, userIdentifier];
@@ -126,10 +145,10 @@
     
     if (convoKind == CKindAll) {
         if (messageKind == MKindAll) {
-            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", userIdentifier];
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", CKindUndefined, userIdentifier];
         }
         else {
-            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@) and (messageTopic.kind = %i)", userIdentifier, messageKind];
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@) and (messageTopic.kind = %i)", CKindUndefined, userIdentifier, messageKind];
         }
     }
     else {
@@ -154,8 +173,6 @@
     
     return fetchResults;
 }
-
-
 
 
 + (NSUInteger)messageFetchLimit {

@@ -16,7 +16,9 @@
 		200DEAB319BE1B01001D1E2F /* CoreDataTesterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 200DEAB219BE1B01001D1E2F /* CoreDataTesterTests.m */; };
 		200DEABF19BE1DA5001D1E2F /* Conversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 200DEABE19BE1DA5001D1E2F /* Conversation.m */; };
 		200DEAC219BE1DAE001D1E2F /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 200DEAC119BE1DAE001D1E2F /* Message.m */; };
-		200DEAC819BE22E7001D1E2F /* LayerDataReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 200DEAC719BE22E7001D1E2F /* LayerDataReader.m */; };
+		200DEAC819BE22E7001D1E2F /* CoreDataReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 200DEAC719BE22E7001D1E2F /* CoreDataReader.m */; };
+		206E587519C7B1610036F07C /* LayerDataAssembler.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E587419C7B1610036F07C /* LayerDataAssembler.m */; };
+		206E587819C7B2A80036F07C /* CoreDataWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E587719C7B2A80036F07C /* CoreDataWriter.m */; };
 		2087032819BF43170070E9B3 /* DBTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2087032719BF43170070E9B3 /* DBTest.m */; };
 		2087032B19BF49320070E9B3 /* ParticipantIdentifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 2087032A19BF49320070E9B3 /* ParticipantIdentifier.m */; };
 		2087032C19BF4F8B0070E9B3 /* CoreDataTester.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 200DEA9D19BE1B01001D1E2F /* CoreDataTester.xcdatamodeld */; };
@@ -58,8 +60,12 @@
 		200DEABE19BE1DA5001D1E2F /* Conversation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Conversation.m; sourceTree = "<group>"; };
 		200DEAC019BE1DAE001D1E2F /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
 		200DEAC119BE1DAE001D1E2F /* Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Message.m; sourceTree = "<group>"; };
-		200DEAC619BE22E7001D1E2F /* LayerDataReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerDataReader.h; sourceTree = "<group>"; };
-		200DEAC719BE22E7001D1E2F /* LayerDataReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerDataReader.m; sourceTree = "<group>"; };
+		200DEAC619BE22E7001D1E2F /* CoreDataReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataReader.h; sourceTree = "<group>"; };
+		200DEAC719BE22E7001D1E2F /* CoreDataReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataReader.m; sourceTree = "<group>"; };
+		206E587319C7B1610036F07C /* LayerDataAssembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerDataAssembler.h; sourceTree = "<group>"; };
+		206E587419C7B1610036F07C /* LayerDataAssembler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerDataAssembler.m; sourceTree = "<group>"; };
+		206E587619C7B2A80036F07C /* CoreDataWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataWriter.h; sourceTree = "<group>"; };
+		206E587719C7B2A80036F07C /* CoreDataWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataWriter.m; sourceTree = "<group>"; };
 		2087032719BF43170070E9B3 /* DBTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DBTest.m; path = ../CoreDataTester/DBTest.m; sourceTree = "<group>"; };
 		2087032919BF49320070E9B3 /* ParticipantIdentifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticipantIdentifier.h; sourceTree = "<group>"; };
 		2087032A19BF49320070E9B3 /* ParticipantIdentifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParticipantIdentifier.m; sourceTree = "<group>"; };
@@ -193,14 +199,18 @@
 		20E1D9DF19C09C2600D765D3 /* Layer */ = {
 			isa = PBXGroup;
 			children = (
-				20C2CB4E19C79A34006E7051 /* LayerDataProcessor.h */,
-				20C2CB4F19C79A34006E7051 /* LayerDataProcessor.m */,
-				200DEAC619BE22E7001D1E2F /* LayerDataReader.h */,
-				200DEAC719BE22E7001D1E2F /* LayerDataReader.m */,
 				20E1D9E019C09C4600D765D3 /* LayerManager.h */,
 				20E1D9E119C09C4600D765D3 /* LayerManager.m */,
+				20C2CB4E19C79A34006E7051 /* LayerDataProcessor.h */,
+				20C2CB4F19C79A34006E7051 /* LayerDataProcessor.m */,
+				206E587319C7B1610036F07C /* LayerDataAssembler.h */,
+				206E587419C7B1610036F07C /* LayerDataAssembler.m */,
 				20C37ABC19C616CD00E00E7C /* LayerAPI.h */,
 				20C37ABD19C616CD00E00E7C /* LayerAPI.m */,
+				200DEAC619BE22E7001D1E2F /* CoreDataReader.h */,
+				200DEAC719BE22E7001D1E2F /* CoreDataReader.m */,
+				206E587619C7B2A80036F07C /* CoreDataWriter.h */,
+				206E587719C7B2A80036F07C /* CoreDataWriter.m */,
 			);
 			name = Layer;
 			sourceTree = "<group>";
@@ -381,6 +391,8 @@
 			files = (
 				20C37ABE19C616CD00E00E7C /* LayerAPI.m in Sources */,
 				2087033219BF87B70070E9B3 /* User.m in Sources */,
+				206E587819C7B2A80036F07C /* CoreDataWriter.m in Sources */,
+				206E587519C7B1610036F07C /* LayerDataAssembler.m in Sources */,
 				20C37ABB19C6140900E00E7C /* BaseAPI.m in Sources */,
 				200DEABF19BE1DA5001D1E2F /* Conversation.m in Sources */,
 				20E1D9E219C09C4600D765D3 /* LayerManager.m in Sources */,
@@ -390,7 +402,7 @@
 				200DEA9F19BE1B01001D1E2F /* CoreDataTester.xcdatamodeld in Sources */,
 				200DEAA219BE1B01001D1E2F /* ViewController.m in Sources */,
 				2087032B19BF49320070E9B3 /* ParticipantIdentifier.m in Sources */,
-				200DEAC819BE22E7001D1E2F /* LayerDataReader.m in Sources */,
+				200DEAC819BE22E7001D1E2F /* CoreDataReader.m in Sources */,
 				200DEA9919BE1B01001D1E2F /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

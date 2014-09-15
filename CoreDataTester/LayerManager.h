@@ -9,10 +9,13 @@
 #import <Foundation/Foundation.h>
 
 #import <LayerKit/LayerKit.h>
-#import "LayerDataReader.h"
-#import "Data.h"
 #import "LayerAPI.h"
+#import "Data.h"
+#import "CoreDataReader.h"
+#import "CoreDataWriter.h"
 #import "LayerDataProcessor.h"
+#import "LayerDataAssembler.h"
+
 
 
 @interface LayerManager : NSObject <LYRClientDelegate>
@@ -24,8 +27,18 @@
 
 @property(strong,nonatomic,readonly) LayerDataProcessor* dataProcessor;
 
-@property(strong,nonatomic,readonly) LayerDataReader* dataReader;
+@property(strong,nonatomic,readonly) LayerDataAssembler* dataAssembler;
 
+@property(strong,nonatomic,readonly) CoreDataReader* dataReader;
+
+@property(strong,nonatomic,readonly) CoreDataWriter* dataWriter;
+
+
+@property(strong,nonatomic) NSManagedObjectContext* managedObjectContext;
+
+
+
+#pragma mark - Public
 
 - (void)connect;
 
@@ -36,7 +49,7 @@
 
 #pragma mark - Read
 
-- (void)getRecentConversationsOfKind:(ConversationKind)type completionBlock:(void(^)(NSArray* converation, NSError* error))block;
+- (void)getRecentConversationsOfKind:(ConversationKind)type completionBlock:(void(^)(NSArray* converations, NSError* error))block;
 
 - (void)getConversation:(NSString*)convoIdentifier completionBlock:(void(^)(Conversation* converasation, NSError* error))block;
 
@@ -51,22 +64,15 @@
 
 #pragma mark - Write
 
-- (void)sendTextMessage:(NSString*)message inConversation:(NSArray*)participantIds completionBlock:(void(^)(Message* message, NSError* error))block;
+- (void)sendPlainMessage:(NSString*)message inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
-- (void)sendLinkTextMessage:(NSString*)message inConversation:(NSArray*)participantIds completionBlock:(void(^)(Message* message, NSError* error))block;
+- (void)sendLinkMessage:(id)message inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
-- (void)sendSongMessage:(NSString*)message inConversation:(NSArray*)participantIds completionBlock:(void(^)(Message* message, NSError* error))block;
+- (void)sendSongMessage:(id)message inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
-- (void)sendPictureMessage:(UIImage*)picture inConversation:(NSArray*)participantIds completionBlock:(void(^)(Message* message, NSError* error))block;
+- (void)sendPictureMessage:(id)message inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
-
-- (void)sendTextMessage:(NSString*)message inNewConversationWithParticipants:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
-
-- (void)sendLinkTextMessage:(NSString*)message inNewConversationWithParticipants:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
-
-- (void)sendSongMessage:(NSString*)message inNewConversationWithParticipants:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
-
-- (void)sendPictureMessage:(NSString*)message inNewConversationWithParticipants:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
+- (void)sendLike:(id)message inConverstaion:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
 
 - (void)markConversationAsRead:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block;
@@ -80,11 +86,15 @@
 
 #pragma mark - Conversation
 
-- (Conversation*)createConversation;
+- (Conversation*)findOrCreateConversationForParticipants:(NSArray*)participants;
 
-- (void)saveMessageToStory:(Message*)message completionBlock:(void(^)(BOOL success, NSError* error))block;
+- (Conversation*)findOrCreateConversationWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic;
 
-- (void)likeMessage:(Message*)message completionBlock:(void(^)(BOOL success, NSError* error))block;
+
+- (void)createSideConverstaionWithSongMessage:(id)message inParentConversation:(Conversation*)parentConversation completionBlock:(void(^)(Message* message, NSError* error))block;
+
+- (void)createSideConverstaionWithPictureMessage:(id)message inParentConversation:(Conversation*)parentConversation completionBlock:(void(^)(Message* message, NSError* error))block;
+
 
 
 @end

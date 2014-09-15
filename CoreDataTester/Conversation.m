@@ -22,6 +22,7 @@
 - (void)awakeFromInsert {
     [super awakeFromInsert];
     self.removed = @NO;
+    self.kind = @(CKindUndefined);
 }
 
 - (BOOL)validateRemoved:(id *)ioValue error:(NSError **)outError {
@@ -62,9 +63,10 @@
 
 - (BOOL)validateLastMessage:(id *)ioValue error:(NSError **)outError {
     if (*ioValue == nil) {
-        if (outError) {
-            *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"lastMessage must be non-NULL"}];
-        }
+//        if (outError) {
+//            *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"lastMessage must be non-NULL"}];
+//        }
+        // alow nil lastMessage while waiting for conversation to be formulated
         return NO;
     }
     Message* message = *ioValue;
@@ -94,7 +96,7 @@
         if (outError) {
             *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"kind must be non-NULL"}];
         }
-    return NO;
+        return NO;
     }
     if ([*ioValue integerValue] < CKindAll || [*ioValue integerValue] > CKindThread) {
         if (outError) {

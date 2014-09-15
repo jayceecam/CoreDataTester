@@ -14,13 +14,13 @@
 #import "Conversation.h"
 #import "Message.h"
 #import "ParticipantIdentifier.h"
-#import "LayerDataReader.h"
+#import "CoreDataReader.h"
 
 
 @interface DBTest : XCTestCase
 
 @property(strong,nonatomic) NSManagedObjectContext *managedObjectContext;
-@property(strong,nonatomic) LayerDataReader* dataAccessor;
+@property(strong,nonatomic) CoreDataReader* dataAccessor;
 
 @end
 
@@ -41,7 +41,7 @@
     
     _managedObjectContext = ((AppDelegate*)[UIApplication sharedApplication].delegate).managedObjectContext;
     
-    _dataAccessor = [[LayerDataReader alloc] init];
+    _dataAccessor = [[CoreDataReader alloc] init];
     _dataAccessor.managedObjectContext = _managedObjectContext;
 }
 

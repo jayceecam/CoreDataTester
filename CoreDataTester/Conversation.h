@@ -13,8 +13,10 @@
 
 typedef enum : NSUInteger {
     CKindAll = 0,
-    CKindChat,
-    CKindThread,
+    CKindUndefined = 1,
+    CKindChat = 2,
+    CKindThread = 3,
+    // Note: update validation rules when adding new conversation kinds
 } ConversationKind;
 
 
@@ -54,6 +56,11 @@ typedef enum : NSUInteger {
 @property(strong,nonatomic) Message* lastMessage;
 
 // TODO: make sure we track who added/created this conversation, especially if it's a child convo
+
+
+#pragma mark - Layer Conversation
+
+@property(strong,nonatomic) LYRConversation* lyrConversation;
 
 @end
 

@@ -14,15 +14,18 @@
 #import "Message.h"
 
 
-@interface LayerDataReader : NSObject
+@interface CoreDataReader : NSObject
 
 
 @property(strong,nonatomic) NSManagedObjectContext* managedObjectContext;
 
 
-- (NSArray*)getRecentConversationsOfKind:(ConversationKind)type;
-
 - (Conversation*)getConversation:(NSString*)convoIdentifier;
+
+- (Message*)getMessage:(NSString*)messageIdentifier;
+
+
+- (NSArray*)getRecentConversationsOfKind:(ConversationKind)type;
 
 
 - (NSArray*)getRecentMessagesForConversation:(NSString*)convoIdentifier ofKind:(MessageKind)kind;

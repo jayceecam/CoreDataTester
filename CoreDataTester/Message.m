@@ -30,13 +30,17 @@
 
 @dynamic body, photoUrl, linkUrl;
 
-@synthesize lyrMessage;
+@dynamic lyrMessage;
 
 
 - (void)awakeFromInsert {
     [super awakeFromInsert];
     self.removed = @NO;
     self.hidden = @NO;
+}
+
+- (void)awakeFromFetch {
+    [super awakeFromFetch];
 }
 
 - (BOOL)validateRemoved:(id *)ioValue error:(NSError **)outError {
@@ -86,7 +90,7 @@
         }
         return NO;
     }
-    if ([*ioValue integerValue] < MKindAll || [*ioValue integerValue] > MKindMessageWhisper) {
+    if ([*ioValue integerValue] < MKindAll || [*ioValue integerValue] > MKindActivityLike) {
         if (outError) {
             *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"kind out of acceptable range"}];
         }
