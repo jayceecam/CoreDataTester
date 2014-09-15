@@ -8,13 +8,30 @@
 
 #import "Message.h"
 
+
+@interface Message ()
+
+@property(strong,nonatomic) NSString* body;
+
+@property(strong,nonatomic) NSURL* photoUrl;
+
+@property(strong,nonatomic) NSURL* linkUrl;
+
+@end
+
+
+
+
 @implementation Message
 
 @dynamic identifier, creatorIdentifier, kind, hidden, removed, createdDate;
 
 @dynamic conversation, parentMessage, linkedMessages;
 
-@dynamic body, audience, photoUrl, linkUrl;
+@dynamic body, photoUrl, linkUrl;
+
+@synthesize lyrMessage;
+
 
 - (void)awakeFromInsert {
     [super awakeFromInsert];

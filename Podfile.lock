@@ -36,6 +36,7 @@ PODS:
     - BlocksKit/Core
     - BlocksKit/DynamicDelegate
   - DateTools (1.4.2)
+  - KeychainItemWrapper (1.2)
   - KVOController (1.0.1)
   - LayerKit (0.7.15)
   - Mantle (1.5):
@@ -54,6 +55,7 @@ DEPENDENCIES:
   - AFNetworking (~> 2.3)
   - BlocksKit (~> 2.2)
   - DateTools (~> 1.0)
+  - KeychainItemWrapper (~> 1.2)
   - KVOController (~> 1.0)
   - LayerKit
   - Mantle (~> 1.5)
@@ -64,6 +66,7 @@ SPEC CHECKSUMS:
   AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
   BlocksKit: 4439e7f30a9f90743462ca63545a15c1f4304cef
   DateTools: 1d8f720ef48e0f229565509639dc31d48e99851b
+  KeychainItemWrapper: 577e9e920185892873ded075b8ceb730bebdfd91
   KVOController: e6ad4a058ab0ceed546802361adb89d322a22cf2
   LayerKit: 6d03bb93bbac107f59fe019aa7cc50cb35e65407
   Mantle: c67a7e45e14196ed42b2a7cbb98ff6a9920e6b92

@@ -15,7 +15,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "94"
             endingLineNumber = "94"
-            landmarkName = "-layerClient:didReceiveAuthenticationChallengeWithNonce:"
+            landmarkName = "-authenticate"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -31,23 +31,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "88"
             endingLineNumber = "88"
-            landmarkName = "-layerClient:didFailSynchronizationWithError:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CoreDataTester/LayerManager.m"
-            timestampString = "432066220.941055"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "51"
-            endingLineNumber = "51"
-            landmarkName = "-layerClient:didFinishSynchronizationWithChanges:"
+            landmarkName = "-authenticate"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

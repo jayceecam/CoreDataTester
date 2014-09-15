@@ -8,9 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import <LayerKit/LayerKit.h>
+
+#import "Conversation.h"
+#import "Message.h"
+#import "ParticipantIdentifier.h"
+
 
 #define kErrorDomainData @"error.domain.data"
 
-@interface Data : NSObject
-
-@end

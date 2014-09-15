@@ -8,7 +8,20 @@
 
 #import "LayerManager.h"
 
-#import "DataAccessor.h"
+#import "LayerDataReader.h"
+
+
+
+@interface LayerManager ()
+
+@property(strong,nonatomic) LYRClient* client;
+@property(strong,nonatomic) LayerAPI* layerAPI;
+@property(strong,nonatomic) LayerDataReader* model;
+
+@property(assign,nonatomic) BOOL authenticating;
+
+@end
+
 
 
 @implementation LayerManager
@@ -17,8 +30,12 @@
 - (id)init {
     self = [super init];
     if (self) {
+        _layerAPI = [[LayerAPI alloc] init];
+        _dataProcessor = [[LayerDataProcessor alloc] init];
         
-        NSUUID *appID = [[NSUUID alloc] initWithUUIDString:@"63f95df4-3774-11e4-bc37-c86404003b52"];
+        _model = [[LayerDataReader alloc] init];
+        
+        NSUUID *appID = [[NSUUID alloc] initWithUUIDString:@"2ed63e76-2c84-11e4-a2c3-8edc000001f6"];
         
         _client = [LYRClient clientWithAppID:appID];
         _client.delegate = self;
@@ -37,11 +54,100 @@
             
         }
         if (error) {
-            
+            NSLog(@"error %@", error.localizedDescription);
         }
     }];
 }
 
+- (void)disconnect {
+    [_client disconnect];
+}
+
+- (void)authenticate {
+    if (_authenticating) return;
+    _authenticating = YES;
+    
+    if (!_client.authenticatedUserID) {
+        [_client requestAuthenticationNonceWithCompletion:^(NSString *nonce, NSError *error) {
+            if (nonce) {
+                [self obtainIdentityTokenWithNonce:nonce completion:^(NSString *identitiyToken, NSError *error) {
+                    if (identitiyToken) {
+                        [_client authenticateWithIdentityToken:identitiyToken completion:^(NSString *authenticatedUserID, NSError *error) {
+                            if (authenticatedUserID) {
+                                
+                            }
+                            if (error) {
+                                NSLog(@"error %@", error);
+                            }
+                            _authenticating = NO;
+                        }];
+                    }
+                    if (error) {
+                        NSLog(@"error %@", error);
+                        _authenticating = NO;
+                    }
+                }];
+            }
+            if (error) {
+                NSLog(@"error %@", error);
+                _authenticating = NO;
+            }
+        }];
+    }
+    else {
+        _authenticating = NO;
+    }
+}
+
+
+#pragma mark - 
+
+- (void)obtainIdentityTokenWithNonce:(NSString*)nonce completion:(void(^)(NSString* identitiyToken, NSError*error))block {
+    [_layerAPI authenticateWithNonce:nonce block:block];
+}
+
+#pragma mark - Read
+
+- (void)getRecentConversationsOfKind:(ConversationKind)type completionBlock:(void(^)(NSArray* converation))block {
+    
+}
+
+- (void)getConversation:(NSString*)convoIdentifier completionBlock:(void(^)(Conversation* converasation))block {
+    
+}
+
+
+- (void)getRecentMessagesForConversation:(NSString*)convoIdentifier ofKind:(MessageKind)kind completionBlock:(void(^)(NSArray* messages))block {
+    
+}
+
+
+- (void)getRecentConversationsForUser:(NSString*)userIdentifier ofKind:(ConversationKind)kind completionBlock:(void(^)(NSArray* conversations))block {
+    
+}
+
+- (void)getRecentConversationsForUser:(NSString*)userIdentifier ofConversationKind:(ConversationKind)convoKind andMessageKind:(MessageKind)messageKind completionBlock:(void(^)(NSArray* conversations))block {
+    
+}
+
+- (void)markConversationAsRead:(Conversation*)conversation {
+    
+}
+
+- (void)markMessagesAsRead:(NSArray*)messages {
+    for (Message* message in messages) {
+//        [_client markMessageAsRead:message.lyrMessage error:<#(NSError *__autoreleasing *)#>]
+    }
+    
+}
+
+- (void)markConversationAsHidden:(Conversation*)conversation {
+    
+}
+
+- (void)markConversationAsFavorited:(Conversation*)conversation {
+    
+}
 
 
 #pragma mark - LayerDelegate
@@ -92,6 +198,8 @@
 
 - (void)layerClient:(LYRClient *)client didReceiveAuthenticationChallengeWithNonce:(NSString *)nonce {
     NSLog(@"teset");
+    
+    
 }
 
 - (void)layerClient:(LYRClient *)client didAuthenticateAsUserID:(NSString *)userID {

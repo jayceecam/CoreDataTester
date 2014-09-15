@@ -14,7 +14,7 @@
 #import "Message.h"
 
 
-@interface DataAccessor : NSObject
+@interface LayerDataReader : NSObject
 
 
 @property(strong,nonatomic) NSManagedObjectContext* managedObjectContext;
@@ -33,8 +33,9 @@
 - (NSArray*)getRecentConversationsForUser:(NSString*)userIdentifier ofConversationKind:(ConversationKind)convoKind andMessageKind:(MessageKind)messageKind;
 
 
-
 + (NSUInteger)messageFetchLimit;
+
+
 
 
 @end

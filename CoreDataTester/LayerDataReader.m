@@ -6,13 +6,13 @@
 //  Copyright (c) 2014 Joe Cerra. All rights reserved.
 //
 
-#import "DataAccessor.h"
+#import "LayerDataReader.h"
 
 #import "Conversation.h"
 #import "Message.h"
 
 
-@implementation DataAccessor
+@implementation LayerDataReader
 
 
 - (NSArray*)getRecentConversationsOfKind:(ConversationKind)kind {

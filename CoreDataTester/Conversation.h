@@ -53,6 +53,8 @@ typedef enum : NSUInteger {
 
 @property(strong,nonatomic) Message* lastMessage;
 
+// TODO: make sure we track who added/created this conversation, especially if it's a child convo
+
 @end
 
 

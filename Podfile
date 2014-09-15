@@ -7,6 +7,7 @@ pod 'DateTools', '~> 1.0'
 pod 'ReactiveCocoa', '~> 2.3'
 pod 'BlocksKit', '~> 2.2'
 pod 'LayerKit'
+pod 'KeychainItemWrapper', '~> 1.2'
 
 link_with 'CoreDataTester', 'CoreDataTesterTests'
 

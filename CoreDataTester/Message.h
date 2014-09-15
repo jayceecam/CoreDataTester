@@ -9,6 +9,7 @@
 #import <CoreData/CoreData.h>
 
 #import "Data.h"
+#import <LayerKit/LayerKit.h>
 
 
 typedef NS_ENUM(NSUInteger, MessageKind) {
@@ -52,12 +53,15 @@ typedef NS_ENUM(NSUInteger, MessageKind) {
 
 
 
+#pragma mark - Layer Message
+
+@property(strong,nonatomic) LYRMessage* lyrMessage;
+
+
 
 #pragma mark - Text
 
 @property(strong,nonatomic,readonly) NSString* body;
-
-@property(strong,nonatomic,readonly) NSArray* audience;
 
 
 #pragma mark - Photo
