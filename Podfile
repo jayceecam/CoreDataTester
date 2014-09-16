@@ -8,6 +8,8 @@ pod 'ReactiveCocoa', '~> 2.3'
 pod 'BlocksKit', '~> 2.2'
 pod 'LayerKit'
 pod 'KeychainItemWrapper', '~> 1.2'
+pod 'embedly-ios', '~> 1.0'
+pod 'Mantle', '~> 1.5'
 
 link_with 'CoreDataTester', 'CoreDataTesterTests'
 

@@ -28,18 +28,17 @@ static KeychainItemWrapper *keychainItem = nil;
 
 
 + (AFHTTPRequestOperationManager*)manager {
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-    manager.responseSerializer = [AFJSONResponseSerializer serializer];
-    return manager;
+    return [self managerWithTimeout:0];
 }
 
 + (AFHTTPRequestOperationManager*)managerWithTimeout:(NSTimeInterval)timeoutInterval {
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
     if (timeoutInterval > 0)
         manager.requestSerializer.timeoutInterval = timeoutInterval;
-    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    if (self.hasAuth)
+        [manager.requestSerializer setValue:self.password forHTTPHeaderField:@"xHN-AuthToken"];
     return manager;
 }
 

@@ -14,13 +14,13 @@
 #import "Conversation.h"
 #import "Message.h"
 #import "ParticipantIdentifier.h"
-#import "CoreDataReader.h"
+#import "CoreDataStore.h"
 
 
 @interface DBTest : XCTestCase
 
 @property(strong,nonatomic) NSManagedObjectContext *managedObjectContext;
-@property(strong,nonatomic) CoreDataReader* dataAccessor;
+@property(strong,nonatomic) CoreDataStore* dataAccessor;
 
 @end
 
@@ -41,7 +41,7 @@
     
     _managedObjectContext = ((AppDelegate*)[UIApplication sharedApplication].delegate).managedObjectContext;
     
-    _dataAccessor = [[CoreDataReader alloc] init];
+    _dataAccessor = [[CoreDataStore alloc] init];
     _dataAccessor.managedObjectContext = _managedObjectContext;
 }
 
@@ -241,7 +241,7 @@
     message.identifier = @"t1.m4";
     message.creatorIdentifier = @"t1.u2";
     message.createdDate = [NSDate dateWithTimeIntervalSince1970:1000];
-    message.kind = @(MKindMessageWhisper);
+    message.kind = @(MKindContentLink);
     message.conversation = convo;
     
     [self save];

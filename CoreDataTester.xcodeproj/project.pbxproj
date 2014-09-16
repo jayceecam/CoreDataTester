@@ -16,9 +16,18 @@
 		200DEAB319BE1B01001D1E2F /* CoreDataTesterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 200DEAB219BE1B01001D1E2F /* CoreDataTesterTests.m */; };
 		200DEABF19BE1DA5001D1E2F /* Conversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 200DEABE19BE1DA5001D1E2F /* Conversation.m */; };
 		200DEAC219BE1DAE001D1E2F /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 200DEAC119BE1DAE001D1E2F /* Message.m */; };
-		200DEAC819BE22E7001D1E2F /* CoreDataReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 200DEAC719BE22E7001D1E2F /* CoreDataReader.m */; };
+		200DEAC819BE22E7001D1E2F /* CoreDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 200DEAC719BE22E7001D1E2F /* CoreDataStore.m */; };
 		206E587519C7B1610036F07C /* LayerDataAssembler.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E587419C7B1610036F07C /* LayerDataAssembler.m */; };
 		206E587819C7B2A80036F07C /* CoreDataWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E587719C7B2A80036F07C /* CoreDataWriter.m */; };
+		206E587F19C895DC0036F07C /* EmbedlyAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E587E19C895DC0036F07C /* EmbedlyAPI.m */; };
+		206E588419C897DF0036F07C /* EmbedlyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E588319C897DF0036F07C /* EmbedlyTest.m */; };
+		206E588719C8AF6E0036F07C /* Link.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E588619C8AF6E0036F07C /* Link.m */; };
+		206E588A19C8B9D60036F07C /* Song.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E588919C8B9D60036F07C /* Song.m */; };
+		206E588C19C8BA130036F07C /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 206E588B19C8BA130036F07C /* AVFoundation.framework */; };
+		206E588E19C8BA820036F07C /* Spotify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 206E588D19C8BA820036F07C /* Spotify.framework */; };
+		206E589019C8BB570036F07C /* SpotifyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E588F19C8BB560036F07C /* SpotifyTest.m */; };
+		206E589419C8BB750036F07C /* SpotifyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E589319C8BB750036F07C /* SpotifyManager.m */; };
+		206E589D19C8CCD40036F07C /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E589C19C8CCD40036F07C /* Image.m */; };
 		2087032819BF43170070E9B3 /* DBTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2087032719BF43170070E9B3 /* DBTest.m */; };
 		2087032B19BF49320070E9B3 /* ParticipantIdentifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 2087032A19BF49320070E9B3 /* ParticipantIdentifier.m */; };
 		2087032C19BF4F8B0070E9B3 /* CoreDataTester.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 200DEA9D19BE1B01001D1E2F /* CoreDataTester.xcdatamodeld */; };
@@ -60,12 +69,26 @@
 		200DEABE19BE1DA5001D1E2F /* Conversation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Conversation.m; sourceTree = "<group>"; };
 		200DEAC019BE1DAE001D1E2F /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
 		200DEAC119BE1DAE001D1E2F /* Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Message.m; sourceTree = "<group>"; };
-		200DEAC619BE22E7001D1E2F /* CoreDataReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataReader.h; sourceTree = "<group>"; };
-		200DEAC719BE22E7001D1E2F /* CoreDataReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataReader.m; sourceTree = "<group>"; };
+		200DEAC619BE22E7001D1E2F /* CoreDataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataStore.h; sourceTree = "<group>"; };
+		200DEAC719BE22E7001D1E2F /* CoreDataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataStore.m; sourceTree = "<group>"; };
 		206E587319C7B1610036F07C /* LayerDataAssembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerDataAssembler.h; sourceTree = "<group>"; };
 		206E587419C7B1610036F07C /* LayerDataAssembler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerDataAssembler.m; sourceTree = "<group>"; };
 		206E587619C7B2A80036F07C /* CoreDataWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataWriter.h; sourceTree = "<group>"; };
 		206E587719C7B2A80036F07C /* CoreDataWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataWriter.m; sourceTree = "<group>"; };
+		206E587D19C895DC0036F07C /* EmbedlyAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmbedlyAPI.h; sourceTree = "<group>"; };
+		206E587E19C895DC0036F07C /* EmbedlyAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmbedlyAPI.m; sourceTree = "<group>"; };
+		206E588319C897DF0036F07C /* EmbedlyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmbedlyTest.m; sourceTree = "<group>"; };
+		206E588519C8AF6E0036F07C /* Link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Link.h; sourceTree = "<group>"; };
+		206E588619C8AF6E0036F07C /* Link.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Link.m; sourceTree = "<group>"; };
+		206E588819C8B9D60036F07C /* Song.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Song.h; sourceTree = "<group>"; };
+		206E588919C8B9D60036F07C /* Song.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Song.m; sourceTree = "<group>"; };
+		206E588B19C8BA130036F07C /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		206E588D19C8BA820036F07C /* Spotify.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Spotify.framework; sourceTree = "<group>"; };
+		206E588F19C8BB560036F07C /* SpotifyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotifyTest.m; sourceTree = "<group>"; };
+		206E589219C8BB750036F07C /* SpotifyManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotifyManager.h; sourceTree = "<group>"; };
+		206E589319C8BB750036F07C /* SpotifyManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotifyManager.m; sourceTree = "<group>"; };
+		206E589B19C8CCD40036F07C /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
+		206E589C19C8CCD40036F07C /* Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Image.m; sourceTree = "<group>"; };
 		2087032719BF43170070E9B3 /* DBTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DBTest.m; path = ../CoreDataTester/DBTest.m; sourceTree = "<group>"; };
 		2087032919BF49320070E9B3 /* ParticipantIdentifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticipantIdentifier.h; sourceTree = "<group>"; };
 		2087032A19BF49320070E9B3 /* ParticipantIdentifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParticipantIdentifier.m; sourceTree = "<group>"; };
@@ -90,6 +113,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				206E588C19C8BA130036F07C /* AVFoundation.framework in Frameworks */,
+				206E588E19C8BA820036F07C /* Spotify.framework in Frameworks */,
 				8272C21B8C34491EA9864171 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -128,6 +153,8 @@
 		200DEA9519BE1B01001D1E2F /* CoreDataTester */ = {
 			isa = PBXGroup;
 			children = (
+				206E589119C8BB6B0036F07C /* Spotify */,
+				206E587919C88E570036F07C /* Embedly */,
 				20C37AB819C6140100E00E7C /* API */,
 				20E1D9DF19C09C2600D765D3 /* Layer */,
 				200DEABC19BE1D94001D1E2F /* Data */,
@@ -155,8 +182,10 @@
 		200DEAAF19BE1B01001D1E2F /* CoreDataTesterTests */ = {
 			isa = PBXGroup;
 			children = (
+				206E588319C897DF0036F07C /* EmbedlyTest.m */,
 				20E1D9DD19C0982B00D765D3 /* LayerTest.m */,
 				2087032719BF43170070E9B3 /* DBTest.m */,
+				206E588F19C8BB560036F07C /* SpotifyTest.m */,
 				200DEAB219BE1B01001D1E2F /* CoreDataTesterTests.m */,
 				200DEAB019BE1B01001D1E2F /* Supporting Files */,
 			);
@@ -183,8 +212,32 @@
 				200DEAC119BE1DAE001D1E2F /* Message.m */,
 				2087032919BF49320070E9B3 /* ParticipantIdentifier.h */,
 				2087032A19BF49320070E9B3 /* ParticipantIdentifier.m */,
+				206E588519C8AF6E0036F07C /* Link.h */,
+				206E588619C8AF6E0036F07C /* Link.m */,
+				206E588819C8B9D60036F07C /* Song.h */,
+				206E588919C8B9D60036F07C /* Song.m */,
+				206E589B19C8CCD40036F07C /* Image.h */,
+				206E589C19C8CCD40036F07C /* Image.m */,
 			);
 			name = Data;
+			sourceTree = "<group>";
+		};
+		206E587919C88E570036F07C /* Embedly */ = {
+			isa = PBXGroup;
+			children = (
+				206E587D19C895DC0036F07C /* EmbedlyAPI.h */,
+				206E587E19C895DC0036F07C /* EmbedlyAPI.m */,
+			);
+			name = Embedly;
+			sourceTree = "<group>";
+		};
+		206E589119C8BB6B0036F07C /* Spotify */ = {
+			isa = PBXGroup;
+			children = (
+				206E589219C8BB750036F07C /* SpotifyManager.h */,
+				206E589319C8BB750036F07C /* SpotifyManager.m */,
+			);
+			name = Spotify;
 			sourceTree = "<group>";
 		};
 		20C37AB819C6140100E00E7C /* API */ = {
@@ -207,8 +260,8 @@
 				206E587419C7B1610036F07C /* LayerDataAssembler.m */,
 				20C37ABC19C616CD00E00E7C /* LayerAPI.h */,
 				20C37ABD19C616CD00E00E7C /* LayerAPI.m */,
-				200DEAC619BE22E7001D1E2F /* CoreDataReader.h */,
-				200DEAC719BE22E7001D1E2F /* CoreDataReader.m */,
+				200DEAC619BE22E7001D1E2F /* CoreDataStore.h */,
+				200DEAC719BE22E7001D1E2F /* CoreDataStore.m */,
 				206E587619C7B2A80036F07C /* CoreDataWriter.h */,
 				206E587719C7B2A80036F07C /* CoreDataWriter.m */,
 			);
@@ -218,6 +271,8 @@
 		29B83CDEA3FD4D558D9207EC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				206E588D19C8BA820036F07C /* Spotify.framework */,
+				206E588B19C8BA130036F07C /* AVFoundation.framework */,
 				4FC799625CE7485B88418279 /* libPods.a */,
 			);
 			name = Frameworks;
@@ -392,17 +447,22 @@
 				20C37ABE19C616CD00E00E7C /* LayerAPI.m in Sources */,
 				2087033219BF87B70070E9B3 /* User.m in Sources */,
 				206E587819C7B2A80036F07C /* CoreDataWriter.m in Sources */,
+				206E587F19C895DC0036F07C /* EmbedlyAPI.m in Sources */,
 				206E587519C7B1610036F07C /* LayerDataAssembler.m in Sources */,
+				206E589419C8BB750036F07C /* SpotifyManager.m in Sources */,
+				206E589D19C8CCD40036F07C /* Image.m in Sources */,
 				20C37ABB19C6140900E00E7C /* BaseAPI.m in Sources */,
+				206E588A19C8B9D60036F07C /* Song.m in Sources */,
 				200DEABF19BE1DA5001D1E2F /* Conversation.m in Sources */,
 				20E1D9E219C09C4600D765D3 /* LayerManager.m in Sources */,
 				200DEAC219BE1DAE001D1E2F /* Message.m in Sources */,
+				206E588719C8AF6E0036F07C /* Link.m in Sources */,
 				20C2CB5019C79A34006E7051 /* LayerDataProcessor.m in Sources */,
 				200DEA9C19BE1B01001D1E2F /* AppDelegate.m in Sources */,
 				200DEA9F19BE1B01001D1E2F /* CoreDataTester.xcdatamodeld in Sources */,
 				200DEAA219BE1B01001D1E2F /* ViewController.m in Sources */,
 				2087032B19BF49320070E9B3 /* ParticipantIdentifier.m in Sources */,
-				200DEAC819BE22E7001D1E2F /* CoreDataReader.m in Sources */,
+				200DEAC819BE22E7001D1E2F /* CoreDataStore.m in Sources */,
 				200DEA9919BE1B01001D1E2F /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -411,8 +471,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				206E589019C8BB570036F07C /* SpotifyTest.m in Sources */,
 				200DEAB319BE1B01001D1E2F /* CoreDataTesterTests.m in Sources */,
 				2087032C19BF4F8B0070E9B3 /* CoreDataTester.xcdatamodeld in Sources */,
+				206E588419C897DF0036F07C /* EmbedlyTest.m in Sources */,
 				2087032819BF43170070E9B3 /* DBTest.m in Sources */,
 				20E1D9DE19C0982B00D765D3 /* LayerTest.m in Sources */,
 			);
@@ -522,6 +584,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = CoreDataTester/Info.plist;
@@ -536,6 +602,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = CoreDataTester/Info.plist;

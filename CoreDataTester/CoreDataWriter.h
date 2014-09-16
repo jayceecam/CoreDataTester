@@ -1,22 +1,22 @@
+////
+////  CoreDataWriter.h
+////  CoreDataTester
+////
+////  Created by Joe Cerra on 9/15/14.
+////  Copyright (c) 2014 Joe Cerra. All rights reserved.
+////
 //
-//  CoreDataWriter.h
-//  CoreDataTester
+//#import <Foundation/Foundation.h>
 //
-//  Created by Joe Cerra on 9/15/14.
-//  Copyright (c) 2014 Joe Cerra. All rights reserved.
+//#import "Data.h"
+//#import <LayerKit/LayerKit.h>
 //
-
-#import <Foundation/Foundation.h>
-
-#import "Data.h"
-#import <LayerKit/LayerKit.h>
-
-@interface CoreDataWriter : NSObject
-
-@property(strong,nonatomic) LYRClient* client;
-
-@property(strong,nonatomic) NSManagedObjectContext* managedObjectContext;
-
-- (NSError*)writeLYRMessage:(LYRMessage*)lyrMessage toConversation:(Conversation*)conversation;
-
-@end
+//@interface CoreDataWriter : NSObject
+//
+//@property(strong,nonatomic) LYRClient* client;
+//
+//@property(strong,nonatomic) NSManagedObjectContext* managedObjectContext;
+//
+//- (Message*)writeLYRMessage:(LYRMessage*)lyrMessage toConversation:(Conversation*)conversation error:(NSError**)error;
+//
+//@end

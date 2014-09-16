@@ -72,14 +72,16 @@
         [_layerClient requestAuthenticationNonceWithCompletion:^(NSString *nonce, NSError *error) {
             NSLog(@"Authentication nonce %@", nonce);
             
-            [self obtainIdentityTokenWithNonce:nonce completion:^(NSString *identitiyToken, NSError *error) {
-                
-                NSLog(@"identity token %@", identitiyToken);
-                
-                XCTAssert(!error);
-                
-                [_layerClient authenticateWithIdentityToken:identitiyToken completion:^(NSString *authenticatedUserID, NSError *error) {
-                    NSLog(@"Authenticated as %@", authenticatedUserID);
+            if (error) {
+                NSLog(@"error %@", error.localizedDescription);
+            }
+            
+            XCTAssert(!error);
+            
+            if (!error) {
+                [self obtainIdentityTokenWithNonce:nonce completion:^(NSString *identitiyToken, NSError *error) {
+                    
+                    NSLog(@"identity token %@", identitiyToken);
                     
                     if (error) {
                         NSLog(@"error %@", error.localizedDescription);
@@ -87,10 +89,22 @@
                     
                     XCTAssert(!error);
                     
-                    [layerAuthExpectation fulfill];
+                    if (!error) {
+                        [_layerClient authenticateWithIdentityToken:identitiyToken completion:^(NSString *authenticatedUserID, NSError *error) {
+                            NSLog(@"Authenticated as %@", authenticatedUserID);
+                            
+                            if (error) {
+                                NSLog(@"error %@", error.localizedDescription);
+                            }
+                            
+                            XCTAssert(!error);
+                            
+                            [layerAuthExpectation fulfill];
+                        }];
+                    }
+                    
                 }];
-                
-            }];
+            }
         }];
     };
     
@@ -122,7 +136,7 @@
     }];
     
     
-    [self waitForExpectationsWithTimeout:20 handler:^(NSError *error) {
+    [self waitForExpectationsWithTimeout:3 handler:^(NSError *error) {
         
     }];
 }

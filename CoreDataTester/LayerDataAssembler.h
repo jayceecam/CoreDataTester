@@ -10,9 +10,35 @@
 
 #import <LayerKit/LayerKit.h>
 
+#import "Data.h"
+
+
+typedef NSData* (^LayerDataAssemblerEncodingFunction)(UIImage* image, NSString** mime);
+
+
 
 @interface LayerDataAssembler : NSObject
 
-- (LYRMessage*)createPlainMessage:(NSString*)message forConversation:(LYRConversation*)conversation;
+@property(strong,nonatomic) LYRClient* client;
+
+@property(strong,nonatomic) NSManagedObjectContext* managedObjectContext;
+
+
+
+
+
+- (Message*)assemblePlainMessage:(NSString*)body forConversation:(Conversation*)conversation;
+
+- (Message*)assembleLinkMessage:(Link*)link forConversation:(Conversation*)conversation;
+
+- (Message*)assembleSongMessage:(Song*)song forConversation:(Conversation*)conversation;
+
+- (Message*)assemblePictureMessage:(UIImage*)image forConversation:(Conversation*)conversation;
+
+- (Message*)assemblePictureMessage:(UIImage*)image encodingFunction:(NSData*(^)(UIImage* image, NSString** mime))encodingBlock forConversation:(Conversation*)conversation;
+
+
++ (LayerDataAssemblerEncodingFunction)jpgEncodingFunction;
+
 
 @end

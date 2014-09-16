@@ -8,7 +8,7 @@
 
 #import "LayerManager.h"
 
-#import "CoreDataReader.h"
+#import "CoreDataStore.h"
 
 
 
@@ -18,8 +18,8 @@
 @property(strong,nonatomic) LayerAPI* layerAPI;
 @property(strong,nonatomic) LayerDataProcessor* dataProcessor;
 @property(strong,nonatomic) LayerDataAssembler* dataAssembler;
-@property(strong,nonatomic) CoreDataReader* dataReader;
-@property(strong,nonatomic) CoreDataWriter* dataWriter;
+@property(strong,nonatomic) CoreDataStore* dataStore;
+//@property(strong,nonatomic) CoreDataWriter* dataWriter;
 
 @property(assign,nonatomic) BOOL authenticating;
 
@@ -39,9 +39,9 @@
         _layerAPI = [[LayerAPI alloc] init];
         _dataProcessor = [[LayerDataProcessor alloc] init];
         _dataAssembler = [[LayerDataAssembler alloc] init];
-        _dataReader = [[CoreDataReader alloc] init];
-        _dataWriter = [[CoreDataWriter alloc] init];
-        _dataWriter.client = _client;
+        _dataStore = [[CoreDataStore alloc] init];
+//        _dataWriter = [[CoreDataWriter alloc] init];
+//        _dataWriter.client = _client;
         
         [self connect];
     }
@@ -53,8 +53,8 @@
 
 - (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
     _managedObjectContext = managedObjectContext;
-    _dataReader.managedObjectContext = managedObjectContext;
-    _dataWriter.managedObjectContext = managedObjectContext;
+    _dataStore.managedObjectContext = managedObjectContext;
+//    _dataWriter.managedObjectContext = managedObjectContext;
 }
 
 - (void)connect {
@@ -169,13 +169,13 @@
 #pragma mark - Read
 
 - (void)getRecentConversationsOfKind:(ConversationKind)type completionBlock:(void(^)(NSArray* converations, NSError* error))block {
-    NSArray* fetchedResults = [_dataReader getRecentConversationsOfKind:type];
+    NSArray* fetchedResults = [_dataStore getRecentConversationsOfKind:type];
     [self hydrateConversations:fetchedResults];
     if (block) block(fetchedResults, nil);
 }
 
 - (void)getConversation:(NSString*)convoIdentifier completionBlock:(void(^)(Conversation* converasation, NSError* error))block {
-    Conversation* conversation = [_dataReader getConversation:convoIdentifier];
+    Conversation* conversation = [_dataStore getConversation:convoIdentifier];
     if (conversation) {
         [self hydrateConversations:@[conversation]];
         if (block) block(conversation, nil);
@@ -184,19 +184,19 @@
 }
 
 - (void)getRecentMessagesForConversation:(NSString*)convoIdentifier ofKind:(MessageKind)kind completionBlock:(void(^)(NSArray* messages, NSError* error))block {
-    NSArray* fetchedResults = [_dataReader getRecentMessagesForConversation:convoIdentifier ofKind:kind];
+    NSArray* fetchedResults = [_dataStore getRecentMessagesForConversation:convoIdentifier ofKind:kind];
     [self hydrateMessages:fetchedResults];
     if (block) block(fetchedResults, nil);
 }
 
 - (void)getRecentConversationsForUser:(NSString*)userIdentifier ofKind:(ConversationKind)kind completionBlock:(void(^)(NSArray* conversations, NSError* error))block {
-    NSArray* fetchedResults = [_dataReader getRecentConversationsForUser:userIdentifier ofKind:kind];
+    NSArray* fetchedResults = [_dataStore getRecentConversationsForUser:userIdentifier ofKind:kind];
     [self hydrateConversations:fetchedResults];
     if (block) block(fetchedResults, nil);
 }
 
 - (void)getRecentConversationsForUser:(NSString*)userIdentifier ofConversationKind:(ConversationKind)convoKind andMessageKind:(MessageKind)messageKind completionBlock:(void(^)(NSArray* conversations, NSError* error))block {
-    NSArray* fetchedResults = [_dataReader getRecentConversationsForUser:userIdentifier ofConversationKind:convoKind andMessageKind:messageKind];
+    NSArray* fetchedResults = [_dataStore getRecentConversationsForUser:userIdentifier ofConversationKind:convoKind andMessageKind:messageKind];
     [self hydrateConversations:fetchedResults];
     if (block) block(fetchedResults, nil);
 }
@@ -206,17 +206,75 @@
 
 - (void)sendPlainMessage:(NSString*)body inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
     
-    LYRMessage* lyrMessage = [_dataAssembler createPlainMessage:body forConversation:conversation.lyrConversation];
+    Message* message = [_dataAssembler assemblePlainMessage:body forConversation:conversation];
     
-    NSError* err = nil;
-    if (![_client sendMessage:lyrMessage error:&err]) {
-        if (block) block(nil, err);
+    NSError* error = nil;
+    
+    if (![_client sendMessage:message.lyrMessage error:&error]) {
+        [self error:@"message send" error:error completionBlock:block];
         return;
     }
     
-    [_dataWriter writeLYRMessage:lyrMessage toConversation:conversation];
+    if (![self.managedObjectContext save:&error]) {
+        [self error:@"message save" error:error completionBlock:block];
+        return;
+    }
     
+    if (block) block(message, nil);
+}
+
+- (void)sendLinkMessage:(Link*)link inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
     
+    Message* message = [_dataAssembler assembleLinkMessage:link forConversation:conversation];
+    
+    NSError* error = nil;
+    
+    if (![_client sendMessage:message.lyrMessage error:&error]) {
+        [self error:@"link send" error:error completionBlock:block];
+        return;
+    }
+    
+    if (![self.managedObjectContext save:&error]) {
+        [self error:@"link save" error:error completionBlock:block];
+        return;
+    }
+    
+    if (block) block(message, nil);
+}
+
+- (void)sendSongMessage:(Song*)song inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
+    
+    Message* message = [_dataAssembler assembleSongMessage:song forConversation:conversation];
+    
+    NSError* error = nil;
+    
+    if (![_client sendMessage:message.lyrMessage error:&error]) {
+        [self error:@"song send" error:error completionBlock:block];
+        return;
+    }
+    
+    if (![self.managedObjectContext save:&error]) {
+        [self error:@"song save" error:error completionBlock:block];
+        return;
+    }
+    
+    if (block) block(message, nil);
+}
+
+- (void)sendPictureMessage:(UIImage*)picture inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
+    
+}
+
+#pragma mark - Util
+
+- (BOOL)error:(NSString*)errorReason error:(NSError*)error completionBlock:(void(^)(Message* message, NSError* error))block {
+    if (error) {
+        NSLog(@"Error during %@: %@, %@", errorReason, error, [error userInfo]);
+        NSAssert(NO, @"%@: %@, %@", errorReason, error, [error userInfo]);
+        if (block) block(nil, error);
+        return YES;
+    }
+    return NO;
 }
 
 
@@ -262,22 +320,33 @@
 
 - (void)layerClient:(LYRClient *)client didFailSynchronizationWithError:(NSError *)error {
     NSLog(@"Layer Cliend did fail Synchronization with error:%@", error);
-    
-    
 }
 
 - (void)layerClient:(LYRClient *)client didReceiveAuthenticationChallengeWithNonce:(NSString *)nonce {
-    NSLog(@"teset");
-    
-    
+    NSLog(@"layer client  did receive auth challenge");
+    [self obtainIdentityTokenWithNonce:nonce completion:^(NSString *identitiyToken, NSError *error) {
+        if (identitiyToken) {
+            [_client authenticateWithIdentityToken:identitiyToken completion:^(NSString *authenticatedUserID, NSError *error) {
+                if (authenticatedUserID) {
+                    NSLog(@"authenticated user %@ to layer", authenticatedUserID);
+                }
+                if (error) {
+                    NSLog(@"error %@", error);
+                }
+            }];
+        }
+        if (error) {
+            NSLog(@"error %@", error);
+        }
+    }];
 }
 
 - (void)layerClient:(LYRClient *)client didAuthenticateAsUserID:(NSString *)userID {
-    
+    NSLog(@"layer client did authenticate as user id %@", userID);
 }
 
 - (void)layerClientDidDeauthenticate:(LYRClient *)client {
-    
+    NSLog(@"layer client  did deauthenticate");
 }
 
 

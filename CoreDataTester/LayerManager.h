@@ -11,10 +11,11 @@
 #import <LayerKit/LayerKit.h>
 #import "LayerAPI.h"
 #import "Data.h"
-#import "CoreDataReader.h"
+#import "CoreDataStore.h"
 #import "CoreDataWriter.h"
 #import "LayerDataProcessor.h"
 #import "LayerDataAssembler.h"
+
 
 
 
@@ -29,9 +30,7 @@
 
 @property(strong,nonatomic,readonly) LayerDataAssembler* dataAssembler;
 
-@property(strong,nonatomic,readonly) CoreDataReader* dataReader;
-
-@property(strong,nonatomic,readonly) CoreDataWriter* dataWriter;
+@property(strong,nonatomic,readonly) CoreDataStore* dataStore;
 
 
 @property(strong,nonatomic) NSManagedObjectContext* managedObjectContext;
@@ -66,13 +65,13 @@
 
 - (void)sendPlainMessage:(NSString*)message inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
-- (void)sendLinkMessage:(id)message inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
+- (void)sendLinkMessage:(Link*)link inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
-- (void)sendSongMessage:(id)message inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
+- (void)sendSongMessage:(Song*)song inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
-- (void)sendPictureMessage:(id)message inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
+- (void)sendPictureMessage:(UIImage*)picture inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
-- (void)sendLike:(id)message inConverstaion:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
+- (void)sendLike:()message inConverstaion:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
 
 - (void)markConversationAsRead:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block;

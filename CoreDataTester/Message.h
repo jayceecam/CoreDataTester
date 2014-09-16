@@ -19,7 +19,8 @@ typedef NS_ENUM(NSUInteger, MessageKind) {
     MKindContentPhoto = 3,
     MKindContentVideo = 4,
     MKindContentLink = 5,
-    MKindActivityLike = 6,
+    MKindContentSong = 6,
+    MKindActivityLike = 50,
     // Note: update validation rules when adding new message kinds
 };
 

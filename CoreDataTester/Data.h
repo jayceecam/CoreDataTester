@@ -13,7 +13,9 @@
 #import "Conversation.h"
 #import "Message.h"
 #import "ParticipantIdentifier.h"
-
+#import "Link.h"
+#import "Song.h"
+#import "Image.h"
 
 #define kErrorDomainData @"error.domain.data"
 
