@@ -17,6 +17,8 @@
 #import "Song.h"
 #import "Picture.h"
 #import "Meta.h"
+#import "Like.h"
+
 
 #define kErrorDomainData @"error.domain.data"
 

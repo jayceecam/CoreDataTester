@@ -35,6 +35,11 @@
 
 - (Message*)assembleMetaMessage:(Meta*)meta forConversation:(Conversation*)conversation;
 
+- (Message*)assembleLikeMessage:(Like*)meta forConversation:(Conversation*)conversation;
+
+
+- (Message*)assembleObject:(id)object forConversation:(Conversation*)conversation;
+
 
 
 - (NSString*)disassemblePlainMessage:(Message*)message;
@@ -45,6 +50,12 @@
 
 - (Picture*)disassemblePictureMessage:(Message*)message;
 
+- (Meta*)disassembleMetaMessage:(Message*)message;
+
+- (Like*)disassembleLikeMessage:(Message*)message;
+
+
+- (id)disassembleMessage:(Message*)message;
 
 
 @end

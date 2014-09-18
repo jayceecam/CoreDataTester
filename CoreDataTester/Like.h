@@ -1,8 +1,8 @@
 //
-//  Meta.h
+//  Like.h
 //  CoreDataTester
 //
-//  Created by Joe Cerra on 9/17/14.
+//  Created by Joe Cerra on 9/18/14.
 //  Copyright (c) 2014 Joe Cerra. All rights reserved.
 //
 
@@ -10,20 +10,16 @@
 
 #import <Mantle/Mantle.h>
 
-
-@interface Meta : MTLModel <MTLJSONSerializing>
-
-@property(strong,nonatomic) NSString* parentConversationIdentifier;
+@interface Like : MTLModel <MTLJSONSerializing>
 
 @property(strong,nonatomic) NSString* parentMessageIdentifier;
-
-@property(strong,nonatomic) NSDictionary* info;
 
 
 - (NSDictionary*)jsonRepresentation;
 
-+ (id)metaWithJsonRepresentation:(NSDictionary*)json;
++ (id)likeWithJsonRepresentation:(NSDictionary*)json;
 
 + (NSString*)mimeType;
+
 
 @end

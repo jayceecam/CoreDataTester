@@ -29,6 +29,7 @@
 		206E589419C8BB750036F07C /* SpotifyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E589319C8BB750036F07C /* SpotifyManager.m */; };
 		206E589D19C8CCD40036F07C /* Picture.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E589C19C8CCD40036F07C /* Picture.m */; };
 		206E58A019CA03B20036F07C /* Meta.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E589F19CA03B20036F07C /* Meta.m */; };
+		206E58A319CB0E100036F07C /* Like.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E58A219CB0E100036F07C /* Like.m */; };
 		2087032819BF43170070E9B3 /* DBTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2087032719BF43170070E9B3 /* DBTest.m */; };
 		2087032B19BF49320070E9B3 /* ParticipantIdentifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 2087032A19BF49320070E9B3 /* ParticipantIdentifier.m */; };
 		2087032C19BF4F8B0070E9B3 /* CoreDataTester.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 200DEA9D19BE1B01001D1E2F /* CoreDataTester.xcdatamodeld */; };
@@ -92,6 +93,8 @@
 		206E589C19C8CCD40036F07C /* Picture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Picture.m; sourceTree = "<group>"; };
 		206E589E19CA03B20036F07C /* Meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Meta.h; sourceTree = "<group>"; };
 		206E589F19CA03B20036F07C /* Meta.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Meta.m; sourceTree = "<group>"; };
+		206E58A119CB0E100036F07C /* Like.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Like.h; sourceTree = "<group>"; };
+		206E58A219CB0E100036F07C /* Like.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Like.m; sourceTree = "<group>"; };
 		2087032719BF43170070E9B3 /* DBTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DBTest.m; path = ../CoreDataTester/DBTest.m; sourceTree = "<group>"; };
 		2087032919BF49320070E9B3 /* ParticipantIdentifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticipantIdentifier.h; sourceTree = "<group>"; };
 		2087032A19BF49320070E9B3 /* ParticipantIdentifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParticipantIdentifier.m; sourceTree = "<group>"; };
@@ -223,6 +226,8 @@
 				206E589C19C8CCD40036F07C /* Picture.m */,
 				206E589E19CA03B20036F07C /* Meta.h */,
 				206E589F19CA03B20036F07C /* Meta.m */,
+				206E58A119CB0E100036F07C /* Like.h */,
+				206E58A219CB0E100036F07C /* Like.m */,
 			);
 			name = Data;
 			sourceTree = "<group>";
@@ -461,6 +466,7 @@
 				206E588A19C8B9D60036F07C /* Song.m in Sources */,
 				200DEABF19BE1DA5001D1E2F /* Conversation.m in Sources */,
 				20E1D9E219C09C4600D765D3 /* LayerManager.m in Sources */,
+				206E58A319CB0E100036F07C /* Like.m in Sources */,
 				200DEAC219BE1DAE001D1E2F /* Message.m in Sources */,
 				206E588719C8AF6E0036F07C /* Link.m in Sources */,
 				20C2CB5019C79A34006E7051 /* LayerDataProcessor.m in Sources */,
