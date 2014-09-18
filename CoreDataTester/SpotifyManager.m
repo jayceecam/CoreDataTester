@@ -78,7 +78,7 @@ static NSString * const kTokenRefreshServiceURL = @"http://localhost:5000/api/v1
             return;
         }
         
-        [self enableAudioPlaybackWithSession:session];
+        // enable audio playback here
     }];
 }
 
@@ -91,7 +91,7 @@ static NSString * const kTokenRefreshServiceURL = @"http://localhost:5000/api/v1
         }
         else {
             // renew token
-            [self renewSession];
+            [self renewSession:session];
         }
     }
 }

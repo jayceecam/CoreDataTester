@@ -12,10 +12,13 @@
 
 
 typedef enum : NSUInteger {
-    CKindAll = 0,
-    CKindUndefined = 1,
-    CKindChat = 2,
-    CKindThread = 3,
+    ConversationKindAll = 0,
+    
+    ConversationKindUndefined = 1,
+    
+    ConversationKindChat = 2,
+    ConversationKindThread = 3,
+    
     // Note: update validation rules when adding new conversation kinds
 } ConversationKind;
 

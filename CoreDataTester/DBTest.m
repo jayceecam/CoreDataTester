@@ -68,13 +68,13 @@
     
     Conversation* conversation = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
     conversation.identifier = [NSString stringWithFormat:@"cid_%i", 0];
-    conversation.kind = @(CKindChat);
+    conversation.kind = @(ConversationKindChat);
     
     Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     message.identifier = [NSString stringWithFormat:@"mid_%i", 0];
     message.creatorIdentifier = [NSString stringWithFormat:@"uid_%i", 0];
     message.createdDate = [NSDate date];
-    message.kind = @(MKindMessagePlain);
+    message.kind = @(MessageKindMessagePlain);
     message.conversation = conversation;
     
     ParticipantIdentifier* participant = (ParticipantIdentifier*)[NSEntityDescription insertNewObjectForEntityForName:@"ParticipantIdentifier" inManagedObjectContext:self.managedObjectContext];
@@ -95,13 +95,13 @@
     // Chat
     Conversation* chat = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
     chat.identifier = @"t1.c1";
-    chat.kind = @(CKindChat);
+    chat.kind = @(ConversationKindChat);
     
     message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     message.identifier = @"t1.m1";
     message.creatorIdentifier = @"t1.u1";
     message.createdDate = [NSDate dateWithTimeIntervalSince1970:500];
-    message.kind = @(MKindMessagePlain);
+    message.kind = @(MessageKindMessagePlain);
     message.conversation = chat;
     
     participant = (ParticipantIdentifier*)[NSEntityDescription insertNewObjectForEntityForName:@"ParticipantIdentifier" inManagedObjectContext:self.managedObjectContext];
@@ -117,13 +117,13 @@
     // Thread
     Conversation* thread = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
     thread.identifier = @"t1.c2";
-    thread.kind = @(CKindThread);
+    thread.kind = @(ConversationKindThread);
     
     message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     message.identifier = @"t1.m2";
     message.creatorIdentifier = @"t1.u2";
     message.createdDate = [NSDate dateWithTimeIntervalSince1970:0];
-    message.kind = @(MKindMessagePlain);
+    message.kind = @(MessageKindMessagePlain);
     message.conversation = thread;
     
     participant = (ParticipantIdentifier*)[NSEntityDescription insertNewObjectForEntityForName:@"ParticipantIdentifier" inManagedObjectContext:self.managedObjectContext];
@@ -145,56 +145,56 @@
     
     // Ensure correct objects
     
-    NSArray* convos = [_dataAccessor getRecentConversationsOfKind:CKindAll];
+    NSArray* convos = [_dataAccessor getRecentConversationsOfKind:ConversationKindAll];
     
     XCTAssert(convos.count == 2);
     
     XCTAssert([[convos[0] identifier] isEqualToString:@"t1.c1"]);
-    XCTAssert([[convos[0] kind] isEqual:@(CKindChat)]);
+    XCTAssert([[convos[0] kind] isEqual:@(ConversationKindChat)]);
     
     XCTAssert([[convos[0] messages] count] == 1);
     XCTAssert([[[[[convos[0] messages] allObjects] firstObject] identifier] isEqualToString:@"t1.m1"]);
     XCTAssert([[[[[convos[0] messages] allObjects] firstObject] creatorIdentifier] isEqualToString:@"t1.u1"]);
-    XCTAssert([[[[[convos[0] messages] allObjects] firstObject] kind] isEqual:@(MKindMessagePlain)]);
+    XCTAssert([[[[[convos[0] messages] allObjects] firstObject] kind] isEqual:@(MessageKindMessagePlain)]);
     
     XCTAssert([[convos[1] identifier] isEqualToString:@"t1.c2"]);
-    XCTAssert([[convos[1] kind] isEqual:@(CKindThread)]);
+    XCTAssert([[convos[1] kind] isEqual:@(ConversationKindThread)]);
     
     XCTAssert([[convos[1] messages] count] == 1);
     XCTAssert([[[[[convos[1] messages] allObjects] firstObject] identifier] isEqualToString:@"t1.m2"]);
     XCTAssert([[[[[convos[1] messages] allObjects] firstObject] creatorIdentifier] isEqualToString:@"t1.u2"]);
-    XCTAssert([[[[[convos[1] messages] allObjects] firstObject] kind] isEqual:@(MKindMessagePlain)]);
+    XCTAssert([[[[[convos[1] messages] allObjects] firstObject] kind] isEqual:@(MessageKindMessagePlain)]);
     
-    NSArray* convosChat = [_dataAccessor getRecentConversationsOfKind:CKindChat];
+    NSArray* convosChat = [_dataAccessor getRecentConversationsOfKind:ConversationKindChat];
     
     XCTAssert(convosChat.count == 1);
     
     XCTAssert([[convosChat[0] identifier] isEqualToString:@"t1.c1"]);
-    XCTAssert([[convosChat[0] kind] isEqual:@(CKindChat)]);
+    XCTAssert([[convosChat[0] kind] isEqual:@(ConversationKindChat)]);
     
-    NSArray* convosThread = [_dataAccessor getRecentConversationsOfKind:CKindThread];
+    NSArray* convosThread = [_dataAccessor getRecentConversationsOfKind:ConversationKindThread];
     
     XCTAssert(convosThread.count == 1);
     
     XCTAssert([[convosThread[0] identifier] isEqualToString:@"t1.c2"]);
-    XCTAssert([[convosThread[0] kind] isEqual:@(CKindThread)]);
+    XCTAssert([[convosThread[0] kind] isEqual:@(ConversationKindThread)]);
 }
 
 - (void)testRecentConversationsUpdates {
     
     [self createRecentConversationsTestData];
     
-    NSArray* convos = [_dataAccessor getRecentConversationsOfKind:CKindChat];
+    NSArray* convos = [_dataAccessor getRecentConversationsOfKind:ConversationKindChat];
     
     XCTAssert(convos.count == 1);
     
     Conversation* c = convos[0];
     
-    c.kind = @(CKindThread);
+    c.kind = @(ConversationKindThread);
     
     [self save];
     
-    convos = [_dataAccessor getRecentConversationsOfKind:CKindChat];
+    convos = [_dataAccessor getRecentConversationsOfKind:ConversationKindChat];
     
     XCTAssert(convos.count == 0);
 }
@@ -203,7 +203,7 @@
     
     [self createRecentConversationsTestData];
     
-    NSArray* messages = [_dataAccessor getRecentMessagesForConversation:@"t1.c1" ofKind:MKindAll];
+    NSArray* messages = [_dataAccessor getRecentMessagesForConversation:@"t1.c1" ofKind:MessageKindAll];
     
     XCTAssert(messages.count == 1);
     
@@ -224,14 +224,14 @@
     message.identifier = @"t1.m3";
     message.creatorIdentifier = @"t1.u2";
     message.createdDate = [NSDate dateWithTimeIntervalSince1970:1000];
-    message.kind = @(MKindMessagePlain);
+    message.kind = @(MessageKindMessagePlain);
     message.conversation = convo;
     
     [self save];
     
     XCTAssert(messages.count == 1);
     
-    messages = [_dataAccessor getRecentMessagesForConversation:@"t1.c1" ofKind:MKindAll];
+    messages = [_dataAccessor getRecentMessagesForConversation:@"t1.c1" ofKind:MessageKindAll];
     
     XCTAssert(messages.count == 2);
     
@@ -241,16 +241,16 @@
     message.identifier = @"t1.m4";
     message.creatorIdentifier = @"t1.u2";
     message.createdDate = [NSDate dateWithTimeIntervalSince1970:1000];
-    message.kind = @(MKindContentLink);
+    message.kind = @(MessageKindContentLink);
     message.conversation = convo;
     
     [self save];
     
-    messages = [_dataAccessor getRecentMessagesForConversation:@"t1.c1" ofKind:MKindAll];
+    messages = [_dataAccessor getRecentMessagesForConversation:@"t1.c1" ofKind:MessageKindAll];
     
     XCTAssert(messages.count == 3);
     
-    messages = [_dataAccessor getRecentMessagesForConversation:@"t1.c1" ofKind:MKindMessagePlain];
+    messages = [_dataAccessor getRecentMessagesForConversation:@"t1.c1" ofKind:MessageKindMessagePlain];
     
     XCTAssert(messages.count == 2);
 }
@@ -259,11 +259,11 @@
     
     [self createRecentConversationsTestData];
     
-    NSArray* convos = [_dataAccessor getRecentConversationsForUser:@"t1.p1" ofKind:CKindAll];
+    NSArray* convos = [_dataAccessor getRecentConversationsForUser:@"t1.p1" ofKind:ConversationKindAll];
     
     XCTAssert(convos.count == 1);
     
-    convos = [_dataAccessor getRecentConversationsForUser:@"t1.p2" ofKind:CKindAll];
+    convos = [_dataAccessor getRecentConversationsForUser:@"t1.p2" ofKind:ConversationKindAll];
     
     XCTAssert(convos.count == 2);
 }
@@ -274,13 +274,13 @@
     
     Conversation* childConvo = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
     childConvo.identifier = @"t1.c3";
-    childConvo.kind = @(CKindChat);
+    childConvo.kind = @(ConversationKindChat);
     
     Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     message.identifier = @"t1.m3";
     message.creatorIdentifier = @"t1.u1";
     message.createdDate = [NSDate dateWithTimeIntervalSince1970:500];
-    message.kind = @(MKindMessagePlain);
+    message.kind = @(MessageKindMessagePlain);
     message.conversation = childConvo;
     
     ParticipantIdentifier* participant = (ParticipantIdentifier*)[NSEntityDescription insertNewObjectForEntityForName:@"ParticipantIdentifier" inManagedObjectContext:self.managedObjectContext];

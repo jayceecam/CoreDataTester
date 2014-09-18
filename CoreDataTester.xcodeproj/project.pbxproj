@@ -27,7 +27,8 @@
 		206E588E19C8BA820036F07C /* Spotify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 206E588D19C8BA820036F07C /* Spotify.framework */; };
 		206E589019C8BB570036F07C /* SpotifyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E588F19C8BB560036F07C /* SpotifyTest.m */; };
 		206E589419C8BB750036F07C /* SpotifyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E589319C8BB750036F07C /* SpotifyManager.m */; };
-		206E589D19C8CCD40036F07C /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E589C19C8CCD40036F07C /* Image.m */; };
+		206E589D19C8CCD40036F07C /* Picture.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E589C19C8CCD40036F07C /* Picture.m */; };
+		206E58A019CA03B20036F07C /* Meta.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E589F19CA03B20036F07C /* Meta.m */; };
 		2087032819BF43170070E9B3 /* DBTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2087032719BF43170070E9B3 /* DBTest.m */; };
 		2087032B19BF49320070E9B3 /* ParticipantIdentifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 2087032A19BF49320070E9B3 /* ParticipantIdentifier.m */; };
 		2087032C19BF4F8B0070E9B3 /* CoreDataTester.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 200DEA9D19BE1B01001D1E2F /* CoreDataTester.xcdatamodeld */; };
@@ -87,8 +88,10 @@
 		206E588F19C8BB560036F07C /* SpotifyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotifyTest.m; sourceTree = "<group>"; };
 		206E589219C8BB750036F07C /* SpotifyManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotifyManager.h; sourceTree = "<group>"; };
 		206E589319C8BB750036F07C /* SpotifyManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpotifyManager.m; sourceTree = "<group>"; };
-		206E589B19C8CCD40036F07C /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
-		206E589C19C8CCD40036F07C /* Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Image.m; sourceTree = "<group>"; };
+		206E589B19C8CCD40036F07C /* Picture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Picture.h; sourceTree = "<group>"; };
+		206E589C19C8CCD40036F07C /* Picture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Picture.m; sourceTree = "<group>"; };
+		206E589E19CA03B20036F07C /* Meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Meta.h; sourceTree = "<group>"; };
+		206E589F19CA03B20036F07C /* Meta.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Meta.m; sourceTree = "<group>"; };
 		2087032719BF43170070E9B3 /* DBTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DBTest.m; path = ../CoreDataTester/DBTest.m; sourceTree = "<group>"; };
 		2087032919BF49320070E9B3 /* ParticipantIdentifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticipantIdentifier.h; sourceTree = "<group>"; };
 		2087032A19BF49320070E9B3 /* ParticipantIdentifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParticipantIdentifier.m; sourceTree = "<group>"; };
@@ -216,8 +219,10 @@
 				206E588619C8AF6E0036F07C /* Link.m */,
 				206E588819C8B9D60036F07C /* Song.h */,
 				206E588919C8B9D60036F07C /* Song.m */,
-				206E589B19C8CCD40036F07C /* Image.h */,
-				206E589C19C8CCD40036F07C /* Image.m */,
+				206E589B19C8CCD40036F07C /* Picture.h */,
+				206E589C19C8CCD40036F07C /* Picture.m */,
+				206E589E19CA03B20036F07C /* Meta.h */,
+				206E589F19CA03B20036F07C /* Meta.m */,
 			);
 			name = Data;
 			sourceTree = "<group>";
@@ -448,9 +453,10 @@
 				2087033219BF87B70070E9B3 /* User.m in Sources */,
 				206E587819C7B2A80036F07C /* CoreDataWriter.m in Sources */,
 				206E587F19C895DC0036F07C /* EmbedlyAPI.m in Sources */,
+				206E58A019CA03B20036F07C /* Meta.m in Sources */,
 				206E587519C7B1610036F07C /* LayerDataAssembler.m in Sources */,
 				206E589419C8BB750036F07C /* SpotifyManager.m in Sources */,
-				206E589D19C8CCD40036F07C /* Image.m in Sources */,
+				206E589D19C8CCD40036F07C /* Picture.m in Sources */,
 				20C37ABB19C6140900E00E7C /* BaseAPI.m in Sources */,
 				206E588A19C8B9D60036F07C /* Song.m in Sources */,
 				200DEABF19BE1DA5001D1E2F /* Conversation.m in Sources */,

@@ -15,7 +15,8 @@
 #import "ParticipantIdentifier.h"
 #import "Link.h"
 #import "Song.h"
-#import "Image.h"
+#import "Picture.h"
+#import "Meta.h"
 
 #define kErrorDomainData @"error.domain.data"
 

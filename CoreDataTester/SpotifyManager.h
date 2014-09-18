@@ -12,7 +12,7 @@
 
 @interface SpotifyManager : NSObject
 
-@property(strong,nonatomic,readonly) BOOL loggedIn;
+@property(assign,nonatomic,readonly) BOOL loggedIn;
 
 - (void)logIn;
 

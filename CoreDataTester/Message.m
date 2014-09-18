@@ -90,7 +90,7 @@
         }
         return NO;
     }
-    if ([*ioValue integerValue] < MKindAll || [*ioValue integerValue] > MKindActivityLike) {
+    if ([*ioValue integerValue] < MessageKindAll || [*ioValue integerValue] > MessageKindActivityLike) {
         if (outError) {
             *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"kind out of acceptable range"}];
         }

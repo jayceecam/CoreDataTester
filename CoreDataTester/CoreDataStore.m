@@ -91,7 +91,7 @@
     
     request.fetchLimit = [self.class messageFetchLimit];
     
-    if (kind == MKindAll) {
+    if (kind == MessageKindAll) {
         request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (hidden = FALSE) and ((conversation.identifier LIKE %@) or (conversation.parentConversation.identifier LIKE %@))", convoIdentifier, convoIdentifier];
     }
     else {
@@ -146,7 +146,7 @@
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
     if (convoKind == CKindAll) {
-        if (messageKind == MKindAll) {
+        if (messageKind == MessageKindAll) {
             request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", CKindUndefined, userIdentifier];
         }
         else {
@@ -154,7 +154,7 @@
         }
     }
     else {
-        if (messageKind == MKindAll) {
+        if (messageKind == MessageKindAll) {
             request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", convoKind, userIdentifier];
         }
         else {

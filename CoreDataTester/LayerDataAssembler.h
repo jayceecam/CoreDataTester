@@ -13,8 +13,6 @@
 #import "Data.h"
 
 
-typedef NSData* (^LayerDataAssemblerEncodingFunction)(UIImage* image, NSString** mime);
-
 
 
 @interface LayerDataAssembler : NSObject
@@ -33,12 +31,20 @@ typedef NSData* (^LayerDataAssemblerEncodingFunction)(UIImage* image, NSString**
 
 - (Message*)assembleSongMessage:(Song*)song forConversation:(Conversation*)conversation;
 
-- (Message*)assemblePictureMessage:(UIImage*)image forConversation:(Conversation*)conversation;
+- (Message*)assemblePictureMessage:(Picture*)picture forConversation:(Conversation*)conversation;
 
-- (Message*)assemblePictureMessage:(UIImage*)image encodingFunction:(NSData*(^)(UIImage* image, NSString** mime))encodingBlock forConversation:(Conversation*)conversation;
+- (Message*)assembleMetaMessage:(Meta*)meta forConversation:(Conversation*)conversation;
 
 
-+ (LayerDataAssemblerEncodingFunction)jpgEncodingFunction;
+
+- (NSString*)disassemblePlainMessage:(Message*)message;
+
+- (Link*)disassembleLinkMessage:(Message*)message;
+
+- (Song*)disassembleSongMessage:(Message*)message;
+
+- (Picture*)disassemblePictureMessage:(Message*)message;
+
 
 
 @end

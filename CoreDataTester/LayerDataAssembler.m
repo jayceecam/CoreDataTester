@@ -11,6 +11,9 @@
 @implementation LayerDataAssembler
 
 
+
+#pragma mark - Assembly
+
 - (Message*)assemblePlainMessage:(NSString*)body forConversation:(Conversation*)conversation {
     LYRMessagePart* dataPart = [LYRMessagePart messagePartWithText:body];
     LYRMessage* msg = [LYRMessage messageWithConversation:conversation.lyrConversation parts:@[dataPart]];
@@ -20,7 +23,7 @@
     message.identifier = msg.identifier.absoluteString;
     message.creatorIdentifier = _client.authenticatedUserID;
     message.createdDate = [NSDate date];
-    message.kind = @(MKindMessagePlain);
+    message.kind = @(MessageKindMessagePlain);
     message.conversation = conversation;
     
     return message;
@@ -44,7 +47,7 @@
     message.identifier = msg.identifier.absoluteString;
     message.creatorIdentifier = _client.authenticatedUserID;
     message.createdDate = [NSDate date];
-    message.kind = @(MKindContentLink);
+    message.kind = @(MessageKindContentLink);
     message.conversation = conversation;
     
     return message;
@@ -68,24 +71,23 @@
     message.identifier = msg.identifier.absoluteString;
     message.creatorIdentifier = _client.authenticatedUserID;
     message.createdDate = [NSDate date];
-    message.kind = @(MKindContentSong);
+    message.kind = @(MessageKindContentSong);
     message.conversation = conversation;
     
     return message;
 }
 
-- (Message*)assemblePictureMessage:(UIImage*)image forConversation:(Conversation*)conversation {
-    return [self assemblePictureMessage:image encodingFunction:[self.class jpgEncodingFunction] forConversation:conversation];
-}
 
-- (Message*)assemblePictureMessage:(UIImage*)image encodingFunction:(NSData*(^)(UIImage* image, NSString** mime))encodingBlock forConversation:(Conversation*)conversation {
-    NSData* jpgData = UIImageJPEGRepresentation(image, 0.8);
+- (Message*)assemblePictureMessage:(Picture*)picture forConversation:(Conversation*)conversation {
+    NSError* error = nil;
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:picture.jsonRepresentation options:0 error:&error];
     
-    NSString* pictureMime = nil;
-    NSData* data = encodingBlock(image, &pictureMime);
+    if (error) {
+        NSLog(@"assemblePictureMessage error %@", error);
+        return nil;
+    }
     
-    LYRMessagePart* dataPart = [LYRMessagePart messagePartWithMIMEType:@"image/jpeg" data:jpgData];
-    
+    LYRMessagePart* dataPart = [LYRMessagePart messagePartWithMIMEType:[Picture mimeType] data:jsonData];
     LYRMessage* msg = [LYRMessage messageWithConversation:conversation.lyrConversation parts:@[dataPart]];
     
     Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
@@ -93,22 +95,101 @@
     message.identifier = msg.identifier.absoluteString;
     message.creatorIdentifier = _client.authenticatedUserID;
     message.createdDate = [NSDate date];
-    message.kind = @(MKindContentSong);
+    message.kind = @(MessageKindContentPicture);
     message.conversation = conversation;
     
     return message;
 }
 
-+ (LayerDataAssemblerEncodingFunction)jpgEncodingFunction:(CGFloat)quality {
-    return ^(UIImage* image, NSString** mime) {
-        *mime = @"image/jpeg";
-        NSData* data = UIImageJPEGRepresentation(image, quality);
-        return data;
-    };
+- (Message*)assembleMetaMessage:(Meta*)meta forConversation:(Conversation*)conversation {
+    NSError* error = nil;
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:meta.jsonRepresentation options:0 error:&error];
+    
+    if (error) {
+        NSLog(@"assembleLinkMessage error %@", error);
+        return nil;
+    }
+    
+    LYRMessagePart* dataPart = [LYRMessagePart messagePartWithMIMEType:[Meta mimeType] data:jsonData];
+    LYRMessage* msg = [LYRMessage messageWithConversation:conversation.lyrConversation parts:@[dataPart]];
+    
+    Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
+    
+    message.identifier = msg.identifier.absoluteString;
+    message.creatorIdentifier = _client.authenticatedUserID;
+    message.createdDate = [NSDate date];
+    message.kind = @(MessageKindContentSong);
+    message.conversation = conversation;
+    
+    return message;
 }
 
-+ (LayerDataAssemblerEncodingFunction)jpgEncodingFunction {
-    return [self jpgEncodingFunction:0.8];
+
+#pragma mark Disassembly
+
+- (NSString*)disassemblePlainMessage:(Message*)message {
+    LYRMessagePart* part = message.lyrMessage.parts[0];
+    return [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
 }
+
+- (Link*)disassembleLinkMessage:(Message*)message {
+    LYRMessagePart* part = message.lyrMessage.parts[0];
+    
+    NSError* error = nil;
+    id json = [NSJSONSerialization JSONObjectWithData:part.data options:0 error:&error];
+    
+    if (error) {
+        NSLog(@"disassembleLink error %@", error);
+        return nil;
+    }
+    
+    return [Link linkWithJsonRepresentation:json];
+}
+
+- (Song*)disassembleSongMessage:(Message*)message {
+    LYRMessagePart* part = message.lyrMessage.parts[0];
+    
+    NSError* error = nil;
+    id json = [NSJSONSerialization JSONObjectWithData:part.data options:0 error:&error];
+    
+    if (error) {
+        NSLog(@"disassembleLink error %@", error);
+        return nil;
+    }
+    
+    return [Song songWithJsonRepresentation:json];
+}
+
+- (Picture*)disassemblePictureMessage:(Message*)message {
+    LYRMessagePart* part = message.lyrMessage.parts[0];
+    
+    NSError* error = nil;
+    id json = [NSJSONSerialization JSONObjectWithData:part.data options:0 error:&error];
+    
+    if (error) {
+        NSLog(@"disassembleLink error %@", error);
+        return nil;
+    }
+    
+    return [Picture pictureWithJsonRepresentation:json];
+}
+
+- (id)disassembleMessageObject:(Message*)message {
+    switch (message.kind.integerValue) {
+        case MessageKindMessagePlain:
+            return [self disassemblePlainMessage:message];
+        case MessageKindContentLink:
+            return [self disassembleLinkMessage:message];
+        case MessageKindContentSong:
+            return [self disassembleSongMessage:message];
+        case MessageKindContentPicture:
+            return [self disassemblePictureMessage:message];
+            
+        default:
+            return nil;
+    }
+}
+
+
 
 @end

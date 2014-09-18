@@ -13,14 +13,16 @@
 
 
 typedef NS_ENUM(NSUInteger, MessageKind) {
-    MKindAll = 0,
-    MKindMeta = 1,
-    MKindMessagePlain = 2,
-    MKindContentPhoto = 3,
-    MKindContentVideo = 4,
-    MKindContentLink = 5,
-    MKindContentSong = 6,
-    MKindActivityLike = 50,
+    MessageKindAll = 0,
+    
+    MessageKindMessagePlain = 1,
+    MessageKindContentPicture = 2,
+    MessageKindContentLink = 3,
+    MessageKindContentSong = 4,
+    
+    MessageKindActivityLike = 1000,
+    
+    MessageKindMeta = 5000,
     // Note: update validation rules when adding new message kinds
 };
 
