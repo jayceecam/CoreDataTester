@@ -22,8 +22,8 @@
     
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
-    if (kind == CKindAll) {
-        request.predicate = [NSPredicate predicateWithFormat:@"(kind != %i) and (removed = FALSE) and (parentConversation = NULL)", CKindUndefined];
+    if (kind == ConversationKindAll) {
+        request.predicate = [NSPredicate predicateWithFormat:@"(kind != %i) and (removed = FALSE) and (parentConversation = NULL)", ConversationKindUndefined];
     }
     else {
         request.predicate = [NSPredicate predicateWithFormat:@"(kind = %i) and (removed = FALSE) and (parentConversation = NULL)", kind];
@@ -118,8 +118,8 @@
     
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
-    if (kind == CKindAll) {
-        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", CKindUndefined, userIdentifier];
+    if (kind == ConversationKindAll) {
+        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", ConversationKindUndefined, userIdentifier];
     }
     else {
         request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", kind, userIdentifier];
@@ -145,12 +145,12 @@
     
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
-    if (convoKind == CKindAll) {
+    if (convoKind == ConversationKindAll) {
         if (messageKind == MessageKindAll) {
-            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", CKindUndefined, userIdentifier];
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", ConversationKindUndefined, userIdentifier];
         }
         else {
-            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@) and (messageTopic.kind = %i)", CKindUndefined, userIdentifier, messageKind];
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@) and (messageTopic.kind = %i)", ConversationKindUndefined, userIdentifier, messageKind];
         }
     }
     else {
