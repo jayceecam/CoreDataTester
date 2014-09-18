@@ -19,6 +19,8 @@
 
 @property(strong,nonatomic) NSManagedObjectContext* managedObjectContext;
 
+@property(strong,nonatomic) NSMapTable* managedObjects;
+
 
 #pragma mark - Read
 
@@ -41,7 +43,12 @@
 + (NSUInteger)messageFetchLimit;
 
 
+#pragma mark - Util
 
+- (NSArray*)getRecentUnreadMessagesForConversation:(NSString*)convoIdentifier ofKind:(MessageKind)kind;
 
+- (Conversation*)getConversationWithParticipants:(NSSet*)participants ofKind:(ConversationKind)kind;
+
+- (Conversation*)getConversationWithParentConversation:(NSString*)parentConversationIdentifier messageTopic:(NSString*)messageTopicIdentifier;
 
 @end

@@ -23,39 +23,50 @@
 
 
 
+#pragma mark - Message Assemply
+
+- (Message*)assembleMessageFromPlainText:(NSString*)body forConversation:(Conversation*)conversation;
+
+- (Message*)assembleMessageFromLink:(Link*)link forConversation:(Conversation*)conversation;
+
+- (Message*)assembleMessageFromSong:(Song*)song forConversation:(Conversation*)conversation;
+
+- (Message*)assembleMessageFromPicture:(Picture*)picture forConversation:(Conversation*)conversation;
+
+- (Message*)assembleMessageFromMeta:(Meta*)meta forConversation:(Conversation*)conversation;
+
+- (Message*)assembleMessageFromLike:(Like*)meta forConversation:(Conversation*)conversation;
 
 
-- (Message*)assemblePlainMessage:(NSString*)body forConversation:(Conversation*)conversation;
-
-- (Message*)assembleLinkMessage:(Link*)link forConversation:(Conversation*)conversation;
-
-- (Message*)assembleSongMessage:(Song*)song forConversation:(Conversation*)conversation;
-
-- (Message*)assemblePictureMessage:(Picture*)picture forConversation:(Conversation*)conversation;
-
-- (Message*)assembleMetaMessage:(Meta*)meta forConversation:(Conversation*)conversation;
-
-- (Message*)assembleLikeMessage:(Like*)meta forConversation:(Conversation*)conversation;
-
-
-- (Message*)assembleObject:(id)object forConversation:(Conversation*)conversation;
+- (Message*)assembleMessageFromObject:(id)object forConversation:(Conversation*)conversation;
 
 
 
-- (NSString*)disassemblePlainMessage:(Message*)message;
+#pragma mark - Message Disassembly
 
-- (Link*)disassembleLinkMessage:(Message*)message;
+- (NSString*)disassemblePlainTextFromMessage:(Message*)message;
 
-- (Song*)disassembleSongMessage:(Message*)message;
+- (Link*)disassembleLinkFromMessage:(Message*)message;
 
-- (Picture*)disassemblePictureMessage:(Message*)message;
+- (Song*)disassembleSongFromMessage:(Message*)message;
 
-- (Meta*)disassembleMetaMessage:(Message*)message;
+- (Picture*)disassemblePictureFromMessage:(Message*)message;
 
-- (Like*)disassembleLikeMessage:(Message*)message;
+- (Meta*)disassembleMetaFromMessage:(Message*)message;
+
+- (Like*)disassembleLikeFromMessage:(Message*)message;
 
 
-- (id)disassembleMessage:(Message*)message;
+- (id)disassembleObjectFromMessage:(Message*)message;
+
+
+
+#pragma mark - Conversation Assembly
+
+- (Conversation*)assembleConversationWithParticipants:(NSSet*)participants andMeta:(Meta*)meta;
+
+- (Conversation*)assembleConversationWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic andMeta:(Meta*)meta;
+
 
 
 @end

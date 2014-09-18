@@ -17,6 +17,8 @@
 
 @property(strong,nonatomic) NSString* parentMessageIdentifier;
 
+@property(strong,nonatomic) NSNumber* conversationKind;
+
 @property(strong,nonatomic) NSDictionary* info;
 
 

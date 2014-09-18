@@ -14,7 +14,7 @@
 
 #pragma mark - Assembly
 
-- (Message*)assemblePlainMessage:(NSString*)body forConversation:(Conversation*)conversation {
+- (Message*)assembleMessageFromPlainText:(NSString*)body forConversation:(Conversation*)conversation {
     LYRMessagePart* dataPart = [LYRMessagePart messagePartWithText:body];
     LYRMessage* msg = [LYRMessage messageWithConversation:conversation.lyrConversation parts:@[dataPart]];
     
@@ -29,7 +29,7 @@
     return message;
 }
 
-- (Message*)assembleLinkMessage:(Link*)link forConversation:(Conversation*)conversation {
+- (Message*)assembleMessageFromLink:(Link*)link forConversation:(Conversation*)conversation {
     
     NSError* error = nil;
     NSData* jsonData = [NSJSONSerialization dataWithJSONObject:link.jsonRepresentation options:0 error:&error];
@@ -54,7 +54,7 @@
     return message;
 }
 
-- (Message*)assembleSongMessage:(Song*)song forConversation:(Conversation*)conversation {
+- (Message*)assembleMessageFromSong:(Song*)song forConversation:(Conversation*)conversation {
     
     NSError* error = nil;
     NSData* jsonData = [NSJSONSerialization dataWithJSONObject:song.jsonRepresentation options:0 error:&error];
@@ -80,7 +80,7 @@
 }
 
 
-- (Message*)assemblePictureMessage:(Picture*)picture forConversation:(Conversation*)conversation {
+- (Message*)assembleMessageFromPicture:(Picture*)picture forConversation:(Conversation*)conversation {
     NSError* error = nil;
     NSData* jsonData = [NSJSONSerialization dataWithJSONObject:picture.jsonRepresentation options:0 error:&error];
     
@@ -104,7 +104,7 @@
     return message;
 }
 
-- (Message*)assembleMetaMessage:(Meta*)meta forConversation:(Conversation*)conversation {
+- (Message*)assembleMessageFromMeta:(Meta*)meta forConversation:(Conversation*)conversation {
     NSError* error = nil;
     NSData* jsonData = [NSJSONSerialization dataWithJSONObject:meta.jsonRepresentation options:0 error:&error];
     
@@ -128,7 +128,7 @@
     return message;
 }
 
-- (Message*)assembleLikeMessage:(Like*)meta forConversation:(Conversation*)conversation {
+- (Message*)assembleMessageFromLike:(Like*)meta forConversation:(Conversation*)conversation {
     NSError* error = nil;
     NSData* jsonData = [NSJSONSerialization dataWithJSONObject:meta.jsonRepresentation options:0 error:&error];
     
@@ -152,24 +152,24 @@
     return message;
 }
 
-- (Message*)assembleObject:(id)object forConversation:(Conversation*)conversation {
+- (Message*)assembleMessageFromObject:(id)object forConversation:(Conversation*)conversation {
     if ([object isKindOfClass:[NSString class]]) {
-        return [self assemblePlainMessage:object forConversation:conversation];
+        return [self assembleMessageFromPlainText:object forConversation:conversation];
     }
     if ([object isKindOfClass:[Link class]]) {
-        return [self assembleLinkMessage:object forConversation:conversation];
+        return [self assembleMessageFromLink:object forConversation:conversation];
     }
     if ([object isKindOfClass:[Song class]]) {
-        return [self assembleSongMessage:object forConversation:conversation];
+        return [self assembleMessageFromSong:object forConversation:conversation];
     }
     if ([object isKindOfClass:[Picture class]]) {
-        return [self assemblePictureMessage:object forConversation:conversation];
+        return [self assembleMessageFromPicture:object forConversation:conversation];
     }
     if ([object isKindOfClass:[Meta class]]) {
-        return [self assembleMetaMessage:object forConversation:conversation];
+        return [self assembleMessageFromMeta:object forConversation:conversation];
     }
     if ([object isKindOfClass:[Like class]]) {
-        return [self assembleLikeMessage:object forConversation:conversation];
+        return [self assembleMessageFromLike:object forConversation:conversation];
     }
     NSAssert(NO, @"reached end of assempleObject function");
     return nil;
@@ -178,12 +178,12 @@
 
 #pragma mark Disassembly
 
-- (NSString*)disassemblePlainMessage:(Message*)message {
+- (NSString*)disassemblePlainTextFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     return [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
 }
 
-- (Link*)disassembleLinkMessage:(Message*)message {
+- (Link*)disassembleLinkFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     
     NSError* error = nil;
@@ -198,7 +198,7 @@
     return [Link linkWithJsonRepresentation:json];
 }
 
-- (Song*)disassembleSongMessage:(Message*)message {
+- (Song*)disassembleSongFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     
     NSError* error = nil;
@@ -213,7 +213,7 @@
     return [Song songWithJsonRepresentation:json];
 }
 
-- (Picture*)disassemblePictureMessage:(Message*)message {
+- (Picture*)disassemblePictureFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     
     NSError* error = nil;
@@ -228,7 +228,7 @@
     return [Picture pictureWithJsonRepresentation:json];
 }
 
-- (Meta*)disassembleMetaMessage:(Message*)message {
+- (Meta*)disassembleMetaFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     
     NSError* error = nil;
@@ -243,7 +243,7 @@
     return [Meta metaWithJsonRepresentation:json];
 }
 
-- (Like*)disassembleLikeMessage:(Message*)message {
+- (Like*)disassembleLikeFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     
     NSError* error = nil;
@@ -259,20 +259,20 @@
 }
 
 
-- (id)disassembleObject:(Message*)message {
+- (id)disassembleObjectFromMessage:(Message*)message {
     switch (message.kind.integerValue) {
         case MessageKindMessagePlain:
-            return [self disassemblePlainMessage:message];
+            return [self disassemblePlainTextFromMessage:message];
         case MessageKindContentLink:
-            return [self disassembleLinkMessage:message];
+            return [self disassembleLinkFromMessage:message];
         case MessageKindContentSong:
-            return [self disassembleSongMessage:message];
+            return [self disassembleSongFromMessage:message];
         case MessageKindContentPicture:
-            return [self disassemblePictureMessage:message];
+            return [self disassemblePictureFromMessage:message];
         case MessageKindMeta:
-            return [self disassembleMetaMessage:message];
+            return [self disassembleMetaFromMessage:message];
         case MessageKindActivityLike:
-            return [self disassembleLikeMessage:message];
+            return [self disassembleLikeFromMessage:message];
             
         default:
             NSAssert(NO, @"reached end of disassempleObject function");
@@ -280,6 +280,44 @@
     }
 }
 
+
+#pragma mark - Conversation Assembly
+
+- (Conversation*)assembleConversationWithParticipants:(NSSet*)participants andMeta:(Meta*)meta {
+    
+    LYRConversation* lyrConversation = [LYRConversation conversationWithParticipants:participants];
+    
+    Conversation* conversation = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
+    conversation.identifier = lyrConversation.identifier.absoluteString;
+    conversation.kind = meta.conversationKind;
+    conversation.removed = @NO;
+    conversation.lyrConversation = lyrConversation;
+    
+    for (NSString* pid in participants) {
+        ParticipantIdentifier* participantId = (ParticipantIdentifier*)[NSEntityDescription insertNewObjectForEntityForName:@"ParticipantIdentifier" inManagedObjectContext:self.managedObjectContext];
+        participantId.identifier = pid;
+        participantId.conversation = conversation;
+    }
+    
+    conversation.messageMeta = [self assembleMessageFromMeta:meta forConversation:conversation];
+    
+    return conversation;
+}
+
+- (Conversation*)assembleConversationWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic andMeta:(Meta*)meta {
+    
+    NSMutableSet* participants = [NSMutableSet setWithCapacity:parentConversation.participantIdentifiers.count];
+    for (ParticipantIdentifier* pi in parentConversation.participantIdentifiers) {
+        [participants addObject:pi.identifier];
+    }
+    
+    Conversation* conversation = [self assembleConversationWithParticipants:participants andMeta:meta];
+    conversation.parentConversation = parentConversation;
+    conversation.messageTopic = messageTopic;
+    conversation.lastMessage = messageTopic;
+    
+    return conversation;
+}
 
 
 @end

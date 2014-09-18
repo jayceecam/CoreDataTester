@@ -32,6 +32,7 @@
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
     return @{@"parentConversationIdentifier": @"parent_conversation_identifier",
              @"parentMessageIdentifier": @"parent_message_identifier",
+             @"conversationKind": @"conversation_kind",
              @"info": @"info",
              };
 }

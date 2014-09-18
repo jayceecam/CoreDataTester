@@ -24,7 +24,7 @@
 
 @implementation Message
 
-@dynamic identifier, creatorIdentifier, kind, hidden, removed, createdDate;
+@dynamic identifier, creatorIdentifier, kind, hidden, removed, read, createdDate;
 
 @dynamic conversation, parentMessage, linkedMessages;
 
@@ -37,6 +37,7 @@
     [super awakeFromInsert];
     self.removed = @NO;
     self.hidden = @NO;
+    self.read = @NO;
 }
 
 - (void)awakeFromFetch {
@@ -57,6 +58,16 @@
     if (*ioValue == nil) {
         if (outError) {
             *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"hidden must be non-NULL"}];
+        }
+        return NO;
+    }
+    return YES;
+}
+
+- (BOOL)validateRead:(id *)ioValue error:(NSError **)outError {
+    if (*ioValue == nil) {
+        if (outError) {
+            *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"read must be non-NULL"}];
         }
         return NO;
     }

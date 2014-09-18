@@ -36,12 +36,14 @@
         NSUUID *appID = [[NSUUID alloc] initWithUUIDString:@"2ed63e76-2c84-11e4-a2c3-8edc000001f6"];
         _client = [LYRClient clientWithAppID:appID];
         _client.delegate = self;
+        
         _layerAPI = [[LayerAPI alloc] init];
-        _dataProcessor = [[LayerDataProcessor alloc] init];
         _dataAssembler = [[LayerDataAssembler alloc] init];
         _dataStore = [[CoreDataStore alloc] init];
-//        _dataWriter = [[CoreDataWriter alloc] init];
-//        _dataWriter.client = _client;
+        _dataProcessor = [[LayerDataProcessor alloc] init];
+        
+        _dataProcessor.dataStore = _dataStore;
+        _dataProcessor.client = _client;
         
         [self connect];
     }
@@ -54,7 +56,7 @@
 - (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
     _managedObjectContext = managedObjectContext;
     _dataStore.managedObjectContext = managedObjectContext;
-//    _dataWriter.managedObjectContext = managedObjectContext;
+    _dataProcessor.managedObjectContext = managedObjectContext;
 }
 
 - (void)connect {
@@ -206,17 +208,17 @@
 
 - (void)sendPlainMessage:(NSString*)body inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
     
-    Message* message = [_dataAssembler assemblePlainMessage:body forConversation:conversation];
+    Message* message = [_dataAssembler assembleMessageFromPlainText:body forConversation:conversation];
     
     NSError* error = nil;
     
     if (![_client sendMessage:message.lyrMessage error:&error]) {
-        [self error:@"message send" error:error completionBlock:block];
+        [self error:@"message send" error:error messageCompletionBlock:block];
         return;
     }
     
     if (![self.managedObjectContext save:&error]) {
-        [self error:@"message save" error:error completionBlock:block];
+        [self error:@"message save" error:error messageCompletionBlock:block];
         return;
     }
     
@@ -225,17 +227,17 @@
 
 - (void)sendLinkMessage:(Link*)link inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
     
-    Message* message = [_dataAssembler assembleLinkMessage:link forConversation:conversation];
+    Message* message = [_dataAssembler assembleMessageFromLink:link forConversation:conversation];
     
     NSError* error = nil;
     
     if (![_client sendMessage:message.lyrMessage error:&error]) {
-        [self error:@"link send" error:error completionBlock:block];
+        [self error:@"link send" error:error messageCompletionBlock:block];
         return;
     }
     
     if (![self.managedObjectContext save:&error]) {
-        [self error:@"link save" error:error completionBlock:block];
+        [self error:@"link save" error:error messageCompletionBlock:block];
         return;
     }
     
@@ -244,34 +246,167 @@
 
 - (void)sendSongMessage:(Song*)song inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
     
-    Message* message = [_dataAssembler assembleSongMessage:song forConversation:conversation];
+    Message* message = [_dataAssembler assembleMessageFromSong:song forConversation:conversation];
     
     NSError* error = nil;
     
     if (![_client sendMessage:message.lyrMessage error:&error]) {
-        [self error:@"song send" error:error completionBlock:block];
+        [self error:@"song send" error:error messageCompletionBlock:block];
         return;
     }
     
     if (![self.managedObjectContext save:&error]) {
-        [self error:@"song save" error:error completionBlock:block];
+        [self error:@"song save" error:error messageCompletionBlock:block];
         return;
     }
     
     if (block) block(message, nil);
 }
 
-- (void)sendPictureMessage:(UIImage*)picture inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
+- (void)sendPictureMessage:(Picture*)picture inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
     
+    Message* message = [_dataAssembler assembleMessageFromPicture:picture forConversation:conversation];
+    
+    NSError* error = nil;
+    
+    if (![_client sendMessage:message.lyrMessage error:&error]) {
+        [self error:@"picture send" error:error messageCompletionBlock:block];
+        return;
+    }
+    
+    if (![self.managedObjectContext save:&error]) {
+        [self error:@"picture save" error:error messageCompletionBlock:block];
+        return;
+    }
+    
+    if (block) block(message, nil);
+}
+
+- (void)sendLike:(Like*)like inConverstaion:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
+    
+    Message* message = [_dataAssembler assembleMessageFromLike:like forConversation:conversation];
+    
+    NSError* error = nil;
+    
+    if (![_client sendMessage:message.lyrMessage error:&error]) {
+        [self error:@"like send" error:error messageCompletionBlock:block];
+        return;
+    }
+    
+    if (![self.managedObjectContext save:&error]) {
+        [self error:@"like save" error:error messageCompletionBlock:block];
+        return;
+    }
+    
+    if (block) block(message, nil);
+}
+
+- (void)sendSavedConversation:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block {
+    
+    NSError* error = nil;
+    
+    if (![_client sendMessage:conversation.messageMeta.lyrMessage error:&error]) {
+        [self error:@"save send" error:error successCompletionBlock:block];
+        return;
+    }
+    
+    if (![self.managedObjectContext save:&error]) {
+        [self error:@"save save" error:error successCompletionBlock:block];
+        return;
+    }
+    
+    if (block) block(YES, nil);
+}
+
+- (void)markConversationAsRead:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block {
+    NSArray* fetchedResults = [_dataStore getRecentUnreadMessagesForConversation:conversation.identifier ofKind:MessageKindAll];
+    [self hydrateMessages:fetchedResults];
+    [self markMessagesAsRead:fetchedResults completionBlock:block];
+}
+
+- (void)markMessagesAsRead:(NSArray*)messages completionBlock:(void(^)(BOOL success, NSError* error))block {
+    
+    if (messages.count) {
+        
+        NSError* error = nil;
+        
+        for (Message* message in messages) {
+            message.read = @YES;
+            
+            if (![_client markMessageAsRead:message.lyrMessage error:&error]) {
+                [self error:@"mark read" error:error successCompletionBlock:block];
+                return;
+            }
+        }
+        
+        if (![self.managedObjectContext save:&error]) {
+            [self error:@"mark read" error:error successCompletionBlock:block];
+            return;
+        }
+    }
+    
+    if (block) block(YES, nil);
+}
+
+- (void)markConversationAsRemoved:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block {
+    conversation.removed = @YES;
+    
+    NSError* error = nil;
+    
+    if (![self.managedObjectContext save:&error]) {
+        [self error:@"mark read" error:error successCompletionBlock:block];
+        return;
+    }
+}
+
+
+#pragma mark - Conversation
+
+- (Conversation*)findOrCreateConversationForParticipants:(NSSet*)participants {
+    Conversation* conversation = [_dataStore getConversationWithParticipants:participants ofKind:ConversationKindChat];
+    if (conversation) {
+        return conversation;
+    }
+    else {
+        Meta* meta = [[Meta alloc] init];
+        meta.conversationKind = @(ConversationKindChat);
+        
+        return [_dataAssembler assembleConversationWithParticipants:participants andMeta:meta];
+    }
+}
+
+- (Conversation*)findOrCreateConversationWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic {
+    Conversation* conversation = [_dataStore getConversationWithParentConversation:parentConversation.identifier messageTopic:messageTopic.identifier];
+    if (conversation) {
+        return conversation;
+    }
+    else {
+        Meta* meta = [[Meta alloc] init];
+        meta.conversationKind = @(ConversationKindChat);
+        meta.parentConversationIdentifier = parentConversation.identifier;
+        meta.parentMessageIdentifier = messageTopic.identifier;
+        
+        return [_dataAssembler assembleConversationWithParentConversation:parentConversation andMessageTopic:messageTopic andMeta:meta];
+    }
 }
 
 #pragma mark - Util
 
-- (BOOL)error:(NSString*)errorReason error:(NSError*)error completionBlock:(void(^)(Message* message, NSError* error))block {
+- (BOOL)error:(NSString*)errorReason error:(NSError*)error messageCompletionBlock:(void(^)(Message* message, NSError* error))block {
     if (error) {
         NSLog(@"Error during %@: %@, %@", errorReason, error, [error userInfo]);
         NSAssert(NO, @"%@: %@, %@", errorReason, error, [error userInfo]);
         if (block) block(nil, error);
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)error:(NSString*)errorReason error:(NSError*)error successCompletionBlock:(void(^)(BOOL success, NSError* error))block {
+    if (error) {
+        NSLog(@"Error during %@: %@, %@", errorReason, error, [error userInfo]);
+        NSAssert(NO, @"%@: %@, %@", errorReason, error, [error userInfo]);
+        if (block) block(NO, error);
         return YES;
     }
     return NO;
@@ -287,33 +422,13 @@
         id changeObject = [change objectForKey:LYRObjectChangeObjectKey];
         if ([changeObject isKindOfClass:[LYRConversation class]]) {
             LYRConversation* conversation = changeObject;
-            LYRObjectChangeType updateKey = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
-            switch (updateKey) {
-                case LYRObjectChangeTypeCreate:
-                    //
-                    break;
-                case LYRObjectChangeTypeUpdate:
-                    //
-                    break;
-                case LYRObjectChangeTypeDelete:
-                    //
-                    break;
-            }
+            LYRObjectChangeType changeType = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
+            [_dataProcessor processConversation:conversation changeType:changeType];
         }
         else {
             LYRMessage* message = changeObject;
-            LYRObjectChangeType updateKey = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
-            switch (updateKey) {
-                case LYRObjectChangeTypeCreate:
-                    //
-                    break;
-                case LYRObjectChangeTypeUpdate:
-                    //
-                    break;
-                case LYRObjectChangeTypeDelete:
-                    //
-                    break;
-            }
+            LYRObjectChangeType changeType = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
+            [_dataProcessor processMessage:message changeType:changeType];
         }
     }
 }

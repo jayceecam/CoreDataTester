@@ -14,6 +14,14 @@
 @implementation CoreDataStore
 
 
+- (id)init {
+    self = [super init];
+    if (self) {
+        _managedObjects = [NSMapTable weakToWeakObjectsMapTable];
+    }
+    return self;
+}
+
 #pragma mark - Reader
 
 - (NSArray*)getRecentConversationsOfKind:(ConversationKind)kind {
@@ -40,6 +48,10 @@
         abort();
     }
     
+    for (Conversation* convo in fetchResults) {
+        [_managedObjects setObject:convo forKey:convo.identifier];
+    }
+    
     return fetchResults;
 }
 
@@ -60,6 +72,10 @@
         abort();
     }
     
+    for (Conversation* convo in fetchResults) {
+        [_managedObjects setObject:convo forKey:convo.identifier];
+    }
+    
     return fetchResults.firstObject;
 }
 
@@ -78,6 +94,10 @@
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
+    }
+    
+    for (Message* message in fetchResults) {
+        [_managedObjects setObject:message forKey:message.identifier];
     }
     
     return fetchResults.firstObject;
@@ -109,12 +129,16 @@
         abort();
     }
     
+    for (Message* message in fetchResults) {
+        [_managedObjects setObject:message forKey:message.identifier];
+    }
+    
     return fetchResults;
 }
 
 - (NSArray*)getRecentConversationsForUser:(NSString*)userIdentifier ofKind:(ConversationKind)kind {
     
-    // returns array of Message objects, ordered by date, with some limit, across all relavant and linked Conversations
+    // returns array of Conversation objects, ordered by date, with some limit, of some kind
     
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
@@ -136,11 +160,17 @@
         abort();
     }
     
+    for (Conversation* convo in fetchResults) {
+        [_managedObjects setObject:convo forKey:convo.identifier];
+    }
+    
     return fetchResults;
 }
 
 
+
 - (NSArray*)getRecentConversationsForUser:(NSString*)userIdentifier ofConversationKind:(ConversationKind)convoKind andMessageKind:(MessageKind)messageKind {
+    
     // returns array of Message objects, ordered by date, with some limit, across all relavant and linked Conversations
     
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
@@ -173,6 +203,10 @@
         abort();
     }
     
+    for (Conversation* convo in fetchResults) {
+        [_managedObjects setObject:convo forKey:convo.identifier];
+    }
+    
     return fetchResults;
 }
 
@@ -182,6 +216,89 @@
 }
 
 
+#pragma mark - Util
+
+- (NSArray*)getRecentUnreadMessagesForConversation:(NSString*)convoIdentifier ofKind:(MessageKind)kind {
+    
+    // returns array of Message objects, ordered by date, with some limit, across all relavant and linked Conversations that are unread
+    
+    NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Message"];
+    
+    request.fetchLimit = [self.class messageFetchLimit];
+    
+    if (kind == MessageKindAll) {
+        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (read = FALSE) and (hidden = FALSE) and ((conversation.identifier LIKE %@) or (conversation.parentConversation.identifier LIKE %@))", convoIdentifier, convoIdentifier];
+    }
+    else {
+        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (read = FALSE) and (hidden = FALSE) and (kind = %i) and ((conversation.identifier LIKE %@) or (conversation.parentConversation.identifier LIKE %@))", kind, convoIdentifier, convoIdentifier];
+    }
+    
+    request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"createdDate" ascending:NO]];
+    
+    NSError* error;
+    NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
+    if (fetchResults == nil) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    
+    for (Message* message in fetchResults) {
+        [_managedObjects setObject:message forKey:message.identifier];
+    }
+    
+    return fetchResults;
+}
+
+- (Conversation*)getConversationWithParticipants:(NSSet*)participants ofKind:(ConversationKind)kind {
+    
+    NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
+    
+    if (kind == ConversationKindAll) {
+        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", ConversationKindUndefined, participants];
+    }
+    else {
+        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", kind, participants];
+    }
+    
+    NSError* error;
+    NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
+    if (fetchResults == nil) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    
+    for (Conversation* convo in fetchResults) {
+        [_managedObjects setObject:convo forKey:convo.identifier];
+    }
+    
+    return fetchResults.firstObject;
+}
+
+- (Conversation*)getConversationWithParentConversation:(NSString*)parentConversationIdentifier messageTopic:(NSString*)messageTopicIdentifier {
+    
+    NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
+    
+    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation.identifier = %@) and (messageTopic.identifier = %@)", ConversationKindUndefined, parentConversationIdentifier, messageTopicIdentifier];
+    
+    NSError* error;
+    NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
+    if (fetchResults == nil) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    
+    for (Conversation* convo in fetchResults) {
+        [_managedObjects setObject:convo forKey:convo.identifier];
+    }
+    
+    return fetchResults.firstObject;
+}
 
 
 @end

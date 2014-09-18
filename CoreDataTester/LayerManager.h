@@ -46,6 +46,7 @@
 - (void)authenticate;
 
 
+
 #pragma mark - Read
 
 - (void)getRecentConversationsOfKind:(ConversationKind)type completionBlock:(void(^)(NSArray* converations, NSError* error))block;
@@ -61,6 +62,7 @@
 - (void)getRecentConversationsForUser:(NSString*)userIdentifier ofConversationKind:(ConversationKind)convoKind andMessageKind:(MessageKind)messageKind completionBlock:(void(^)(NSArray* conversations, NSError* error))block;
 
 
+
 #pragma mark - Write
 
 - (void)sendPlainMessage:(NSString*)message inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
@@ -69,32 +71,29 @@
 
 - (void)sendSongMessage:(Song*)song inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
-- (void)sendPictureMessage:(UIImage*)picture inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
+- (void)sendPictureMessage:(Picture*)picture inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
-- (void)sendLike:()message inConverstaion:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
+- (void)sendLike:(Like*)like inConverstaion:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
+
+- (void)sendSavedConversation:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block;
 
 
 - (void)markConversationAsRead:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block;
 
 - (void)markMessagesAsRead:(NSArray*)messages completionBlock:(void(^)(BOOL success, NSError* error))block;
 
-- (void)markConversationAsHidden:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block;
-
-- (void)markConversationAsFavorited:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block;
+- (void)markConversationAsRemoved:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block;
 
 
-#pragma mark - Conversation
 
-- (Conversation*)findOrCreateConversationForParticipants:(NSArray*)participants;
+#pragma mark - Conversation Util
+
+- (Conversation*)findOrCreateConversationForParticipants:(NSSet*)participants;
 
 - (Conversation*)findOrCreateConversationWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic;
 
 
-- (void)createSideConverstaionWithSongMessage:(id)message inParentConversation:(Conversation*)parentConversation completionBlock:(void(^)(Message* message, NSError* error))block;
-
-- (void)createSideConverstaionWithPictureMessage:(id)message inParentConversation:(Conversation*)parentConversation completionBlock:(void(^)(Message* message, NSError* error))block;
-
-
-
 @end
+
+
 

@@ -52,6 +52,8 @@ typedef enum : NSUInteger {
 
 @property(strong,nonatomic) Message* messageTopic;
 
+@property(strong,nonatomic) Message* messageMeta;
+
 
 // This message may or may not be linked (i.e. it may belong to another conversation but be linked)
 // TODO: need to verify that this message is not hidden

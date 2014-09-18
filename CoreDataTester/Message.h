@@ -44,6 +44,8 @@ typedef NS_ENUM(NSUInteger, MessageKind) {
 
 @property(strong,nonatomic) NSNumber* removed;
 
+@property(strong,nonatomic) NSNumber* read;
+
 @property(strong,nonatomic) NSDate* createdDate;
 
 

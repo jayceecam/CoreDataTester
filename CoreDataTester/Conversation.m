@@ -22,7 +22,7 @@
 - (void)awakeFromInsert {
     [super awakeFromInsert];
     self.removed = @NO;
-    self.kind = @(CKindUndefined);
+    self.kind = @(ConversationKindUndefined);
 }
 
 - (BOOL)validateRemoved:(id *)ioValue error:(NSError **)outError {
@@ -67,7 +67,7 @@
 //            *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"lastMessage must be non-NULL"}];
 //        }
         // alow nil lastMessage while waiting for conversation to be formulated
-        return NO;
+        return YES;
     }
     Message* message = *ioValue;
     if (![message isKindOfClass:[Message class]]) {
@@ -98,7 +98,7 @@
         }
         return NO;
     }
-    if ([*ioValue integerValue] < CKindAll || [*ioValue integerValue] > CKindThread) {
+    if ([*ioValue integerValue] < ConversationKindAll || [*ioValue integerValue] > ConversationKindThread) {
         if (outError) {
             *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"kind out of acceptable range"}];
         }
