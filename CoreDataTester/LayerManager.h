@@ -67,6 +67,8 @@
 
 - (void)sendPlainMessage:(NSString*)message inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
+- (void)sendWhisperMessage:(Whisper*)whisper inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
+
 - (void)sendLinkMessage:(Link*)link inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
 - (void)sendSongMessage:(Song*)song inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
@@ -75,7 +77,12 @@
 
 - (void)sendLike:(Like*)like inConverstaion:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block;
 
+
+
 - (void)sendSavedConversation:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block;
+
+- (void)sendSavedConversation:(Conversation*)conversation withMessage:(NSString*)message completionBlock:(void(^)(BOOL success, NSError* error))block;
+
 
 
 - (void)markConversationAsRead:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block;
@@ -88,9 +95,11 @@
 
 #pragma mark - Conversation Util
 
-- (Conversation*)findOrCreateConversationForParticipants:(NSSet*)participants;
+- (Conversation*)findOrCreateChatWithParticipantIds:(NSSet*)participantIds;
 
-- (Conversation*)findOrCreateConversationWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic;
+- (Conversation*)findOrCreateMomentWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic;
+
+- (Conversation*)findorCreateSidebarWithParentConversation:(Conversation*)parentConversation andParticipants:(NSSet*)participantIds;
 
 
 @end

@@ -92,7 +92,7 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
     NSError* error = nil;
     
     if (![self.managedObjectContext save:&error]) {
-        [self error:@"mark read" error:error];
+        [self error:@"process conversation" error:error];
         return nil;
     }
     

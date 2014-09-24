@@ -29,6 +29,31 @@
     return message;
 }
 
+- (Message*)assembleMessageFromWhisper:(Whisper*)whisper forConversation:(Conversation*)conversation {
+    
+    NSError* error = nil;
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:whisper.jsonRepresentation options:0 error:&error];
+    
+    if (error) {
+        NSAssert(NO, @"assembleMsgMessage error %@", error);
+        NSLog(@"assembleMsgMessage error %@", error);
+        return nil;
+    }
+    
+    LYRMessagePart* dataPart = [LYRMessagePart messagePartWithMIMEType:[Whisper mimeType] data:jsonData];
+    LYRMessage* msg = [LYRMessage messageWithConversation:conversation.lyrConversation parts:@[dataPart]];
+    
+    Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
+    
+    message.identifier = msg.identifier.absoluteString;
+    message.creatorIdentifier = _client.authenticatedUserID;
+    message.createdDate = [NSDate date];
+    message.kind = @(MessageKindMessageWhisper);
+    message.conversation = conversation;
+    
+    return message;
+}
+
 - (Message*)assembleMessageFromLink:(Link*)link forConversation:(Conversation*)conversation {
     
     NSError* error = nil;
@@ -156,6 +181,9 @@
     if ([object isKindOfClass:[NSString class]]) {
         return [self assembleMessageFromPlainText:object forConversation:conversation];
     }
+    if ([object isKindOfClass:[Whisper class]]) {
+        return [self assembleMessageFromWhisper:object forConversation:conversation];
+    }
     if ([object isKindOfClass:[Link class]]) {
         return [self assembleMessageFromLink:object forConversation:conversation];
     }
@@ -181,6 +209,21 @@
 - (NSString*)disassemblePlainTextFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     return [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
+}
+
+- (Whisper*)disassembleWhisperFromMessage:(Message*)message {
+    LYRMessagePart* part = message.lyrMessage.parts[0];
+    
+    NSError* error = nil;
+    id json = [NSJSONSerialization JSONObjectWithData:part.data options:0 error:&error];
+    
+    if (error) {
+        NSAssert(NO, @"disassembleWhisper error %@", error);
+        NSLog(@"disassembleWhisper error %@", error);
+        return nil;
+    }
+    
+    return [Whisper whisperWithJsonRepresentation:json];
 }
 
 - (Link*)disassembleLinkFromMessage:(Message*)message {
@@ -263,6 +306,8 @@
     switch (message.kind.integerValue) {
         case MessageKindMessagePlain:
             return [self disassemblePlainTextFromMessage:message];
+        case MessageKindMessageWhisper:
+            return [self disassembleWhisperFromMessage:message];
         case MessageKindContentLink:
             return [self disassembleLinkFromMessage:message];
         case MessageKindContentSong:
@@ -283,9 +328,9 @@
 
 #pragma mark - Conversation Assembly
 
-- (Conversation*)assembleConversationWithParticipants:(NSSet*)participants andMeta:(Meta*)meta {
+- (Conversation*)_assembleConversationWithParticipantIds:(NSSet*)participantIds andMeta:(Meta*)meta {
     
-    LYRConversation* lyrConversation = [LYRConversation conversationWithParticipants:participants];
+    LYRConversation* lyrConversation = [LYRConversation conversationWithParticipants:participantIds];
     
     Conversation* conversation = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
     conversation.identifier = lyrConversation.identifier.absoluteString;
@@ -293,7 +338,7 @@
     conversation.removed = @NO;
     conversation.lyrConversation = lyrConversation;
     
-    for (NSString* pid in participants) {
+    for (NSString* pid in participantIds) {
         ParticipantIdentifier* participantId = (ParticipantIdentifier*)[NSEntityDescription insertNewObjectForEntityForName:@"ParticipantIdentifier" inManagedObjectContext:self.managedObjectContext];
         participantId.identifier = pid;
         participantId.conversation = conversation;
@@ -304,17 +349,40 @@
     return conversation;
 }
 
-- (Conversation*)assembleConversationWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic andMeta:(Meta*)meta {
+- (Conversation*)assembleChatWithParticipantIds:(NSSet*)participantIds andMeta:(Meta*)meta {
     
-    NSMutableSet* participants = [NSMutableSet setWithCapacity:parentConversation.participantIdentifiers.count];
+    NSAssert(meta.conversationKind.integerValue == ConversationKindChat, @"meta.conversationKind != ConversationKindChat");
+    
+    Conversation* conversation = [self _assembleConversationWithParticipantIds:participantIds andMeta:meta];
+    
+    return conversation;
+}
+
+- (Conversation*)assembleMomentWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic andMeta:(Meta*)meta {
+    
+    NSMutableSet* participantIds = [NSMutableSet setWithCapacity:parentConversation.participantIdentifiers.count];
     for (ParticipantIdentifier* pi in parentConversation.participantIdentifiers) {
-        [participants addObject:pi.identifier];
+        [participantIds addObject:pi.identifier];
     }
     
-    Conversation* conversation = [self assembleConversationWithParticipants:participants andMeta:meta];
+    NSAssert(meta.conversationKind.integerValue == ConversationKindMoment, @"meta.conversationKind != ConversationKindMoment");
+    
+    Conversation* conversation = [self _assembleConversationWithParticipantIds:participantIds andMeta:meta];
+    
     conversation.parentConversation = parentConversation;
     conversation.messageTopic = messageTopic;
     conversation.lastMessage = messageTopic;
+    
+    return conversation;
+}
+
+- (Conversation*)assembleSidebarWithParentConversation:(Conversation*)parentConversation participantIds:(NSSet*)participantIds andMeta:(Meta*)meta {
+    
+    NSAssert(meta.conversationKind.integerValue == ConversationKindSidebar, @"meta.conversationKind != ConversationKindSidebar");
+    
+    Conversation* conversation = [self _assembleConversationWithParticipantIds:participantIds andMeta:meta];
+    
+    conversation.parentConversation = parentConversation;
     
     return conversation;
 }

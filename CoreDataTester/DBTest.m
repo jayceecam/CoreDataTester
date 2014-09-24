@@ -117,7 +117,7 @@
     // Thread
     Conversation* thread = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
     thread.identifier = @"t1.c2";
-    thread.kind = @(ConversationKindThread);
+    thread.kind = @(ConversationKindMoment);
     
     message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     message.identifier = @"t1.m2";
@@ -158,7 +158,7 @@
     XCTAssert([[[[[convos[0] messages] allObjects] firstObject] kind] isEqual:@(MessageKindMessagePlain)]);
     
     XCTAssert([[convos[1] identifier] isEqualToString:@"t1.c2"]);
-    XCTAssert([[convos[1] kind] isEqual:@(ConversationKindThread)]);
+    XCTAssert([[convos[1] kind] isEqual:@(ConversationKindMoment)]);
     
     XCTAssert([[convos[1] messages] count] == 1);
     XCTAssert([[[[[convos[1] messages] allObjects] firstObject] identifier] isEqualToString:@"t1.m2"]);
@@ -172,12 +172,12 @@
     XCTAssert([[convosChat[0] identifier] isEqualToString:@"t1.c1"]);
     XCTAssert([[convosChat[0] kind] isEqual:@(ConversationKindChat)]);
     
-    NSArray* convosThread = [_dataAccessor getRecentConversationsOfKind:ConversationKindThread];
+    NSArray* convosThread = [_dataAccessor getRecentConversationsOfKind:ConversationKindMoment];
     
     XCTAssert(convosThread.count == 1);
     
     XCTAssert([[convosThread[0] identifier] isEqualToString:@"t1.c2"]);
-    XCTAssert([[convosThread[0] kind] isEqual:@(ConversationKindThread)]);
+    XCTAssert([[convosThread[0] kind] isEqual:@(ConversationKindMoment)]);
 }
 
 - (void)testRecentConversationsUpdates {
@@ -190,7 +190,7 @@
     
     Conversation* c = convos[0];
     
-    c.kind = @(ConversationKindThread);
+    c.kind = @(ConversationKindMoment);
     
     [self save];
     

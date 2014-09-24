@@ -251,16 +251,11 @@
     return fetchResults;
 }
 
-- (Conversation*)getConversationWithParticipants:(NSSet*)participants ofKind:(ConversationKind)kind {
+- (Conversation*)getChatWithParticipants:(NSSet*)participantIds {
     
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
-    if (kind == ConversationKindAll) {
-        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", ConversationKindUndefined, participants];
-    }
-    else {
-        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", kind, participants];
-    }
+    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", ConversationKindChat, participantIds];
     
     NSError* error;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
@@ -278,11 +273,11 @@
     return fetchResults.firstObject;
 }
 
-- (Conversation*)getConversationWithParentConversation:(NSString*)parentConversationIdentifier messageTopic:(NSString*)messageTopicIdentifier {
+- (Conversation*)getMomentWithParentConversation:(NSString*)parentConversationIdentifier messageTopic:(NSString*)messageTopicIdentifier {
     
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
-    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation.identifier = %@) and (messageTopic.identifier = %@)", ConversationKindUndefined, parentConversationIdentifier, messageTopicIdentifier];
+    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation.identifier = %@) and (messageTopic.identifier = %@)", ConversationKindMoment, parentConversationIdentifier, messageTopicIdentifier];
     
     NSError* error;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
@@ -299,6 +294,83 @@
     
     return fetchResults.firstObject;
 }
+
+- (Conversation*)getSidebarWithParentConversation:(NSString*)parentConversationIdentifier audienceIds:(NSSet*)audienceIds {
+    
+    NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
+    
+    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", ConversationKindSidebar, parentConversationIdentifier, audienceIds];
+    
+    NSError* error;
+    NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
+    if (fetchResults == nil) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    
+    for (Conversation* convo in fetchResults) {
+        [_managedObjects setObject:convo forKey:convo.identifier];
+    }
+    
+    return fetchResults.firstObject;
+}
+
+
+
+
+
+//#pragma mark - Deprecated
+//
+//- (Conversation*)getConversationWithParticipants:(NSSet*)participants ofKind:(ConversationKind)kind {
+//    
+//    NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
+//    
+//    if (kind == ConversationKindAll) {
+//        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", ConversationKindUndefined, participants];
+//    }
+//    else {
+//        request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", kind, participants];
+//    }
+//    
+//    NSError* error;
+//    NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
+//    if (fetchResults == nil) {
+//        // Replace this implementation with code to handle the error appropriately.
+//        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+//        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+//        abort();
+//    }
+//    
+//    for (Conversation* convo in fetchResults) {
+//        [_managedObjects setObject:convo forKey:convo.identifier];
+//    }
+//    
+//    return fetchResults.firstObject;
+//}
+//
+//- (Conversation*)getConversationWithParentConversation:(NSString*)parentConversationIdentifier messageTopic:(NSString*)messageTopicIdentifier ofKind:(ConversationKind)kind {
+//    
+//    NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
+//    
+//    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation.identifier = %@) and (messageTopic.identifier = %@)", kind, parentConversationIdentifier, messageTopicIdentifier];
+//    
+//    NSError* error;
+//    NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
+//    if (fetchResults == nil) {
+//        // Replace this implementation with code to handle the error appropriately.
+//        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+//        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+//        abort();
+//    }
+//    
+//    for (Conversation* convo in fetchResults) {
+//        [_managedObjects setObject:convo forKey:convo.identifier];
+//    }
+//    
+//    return fetchResults.firstObject;
+//}
 
 
 @end

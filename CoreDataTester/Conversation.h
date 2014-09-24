@@ -17,7 +17,8 @@ typedef enum : NSUInteger {
     ConversationKindUndefined = 1,
     
     ConversationKindChat = 2,
-    ConversationKindThread = 3,
+    ConversationKindMoment = 3,
+    ConversationKindSidebar = 4,
     
     // Note: update validation rules when adding new conversation kinds
 } ConversationKind;

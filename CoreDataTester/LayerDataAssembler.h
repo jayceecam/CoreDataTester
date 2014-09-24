@@ -27,6 +27,8 @@
 
 - (Message*)assembleMessageFromPlainText:(NSString*)body forConversation:(Conversation*)conversation;
 
+- (Message*)assembleMessageFromWhisper:(Whisper*)whisper forConversation:(Conversation*)conversation;
+
 - (Message*)assembleMessageFromLink:(Link*)link forConversation:(Conversation*)conversation;
 
 - (Message*)assembleMessageFromSong:(Song*)song forConversation:(Conversation*)conversation;
@@ -46,6 +48,8 @@
 
 - (NSString*)disassemblePlainTextFromMessage:(Message*)message;
 
+- (Whisper*)disassembleWhisperFromMessage:(Message*)message;
+
 - (Link*)disassembleLinkFromMessage:(Message*)message;
 
 - (Song*)disassembleSongFromMessage:(Message*)message;
@@ -63,9 +67,11 @@
 
 #pragma mark - Conversation Assembly
 
-- (Conversation*)assembleConversationWithParticipants:(NSSet*)participants andMeta:(Meta*)meta;
+- (Conversation*)assembleChatWithParticipantIds:(NSSet*)participantIds andMeta:(Meta*)meta;
 
-- (Conversation*)assembleConversationWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic andMeta:(Meta*)meta;
+- (Conversation*)assembleMomentWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic andMeta:(Meta*)meta;
+
+- (Conversation*)assembleSidebarWithParentConversation:(Conversation*)parentConversation audience:(NSSet*)audienceIds andMeta:(Meta*)meta;
 
 
 

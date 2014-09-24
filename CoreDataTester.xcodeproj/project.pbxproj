@@ -34,6 +34,9 @@
 		2087032B19BF49320070E9B3 /* ParticipantIdentifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 2087032A19BF49320070E9B3 /* ParticipantIdentifier.m */; };
 		2087032C19BF4F8B0070E9B3 /* CoreDataTester.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 200DEA9D19BE1B01001D1E2F /* CoreDataTester.xcdatamodeld */; };
 		2087033219BF87B70070E9B3 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 2087033119BF87B70070E9B3 /* User.m */; };
+		20AA383419D34C1100580981 /* Whisper.m in Sources */ = {isa = PBXBuildFile; fileRef = 20AA383319D34C1100580981 /* Whisper.m */; };
+		20AA383719D359E800580981 /* ConversationDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 20AA383619D359E800580981 /* ConversationDataSource.m */; };
+		20AA383919D35CF500580981 /* Data.m in Sources */ = {isa = PBXBuildFile; fileRef = 20AA383819D35CF500580981 /* Data.m */; };
 		20C2CB5019C79A34006E7051 /* LayerDataProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 20C2CB4F19C79A34006E7051 /* LayerDataProcessor.m */; };
 		20C37ABB19C6140900E00E7C /* BaseAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 20C37ABA19C6140900E00E7C /* BaseAPI.m */; };
 		20C37ABE19C616CD00E00E7C /* LayerAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 20C37ABD19C616CD00E00E7C /* LayerAPI.m */; };
@@ -101,6 +104,11 @@
 		2087032D19BF55760070E9B3 /* Data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Data.h; sourceTree = "<group>"; };
 		2087033019BF87B70070E9B3 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		2087033119BF87B70070E9B3 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
+		20AA383219D34C1100580981 /* Whisper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Whisper.h; sourceTree = "<group>"; };
+		20AA383319D34C1100580981 /* Whisper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Whisper.m; sourceTree = "<group>"; };
+		20AA383519D359E800580981 /* ConversationDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationDataSource.h; sourceTree = "<group>"; };
+		20AA383619D359E800580981 /* ConversationDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationDataSource.m; sourceTree = "<group>"; };
+		20AA383819D35CF500580981 /* Data.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Data.m; sourceTree = "<group>"; };
 		20C2CB4E19C79A34006E7051 /* LayerDataProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerDataProcessor.h; sourceTree = "<group>"; };
 		20C2CB4F19C79A34006E7051 /* LayerDataProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerDataProcessor.m; sourceTree = "<group>"; };
 		20C37AB919C6140900E00E7C /* BaseAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseAPI.h; sourceTree = "<group>"; };
@@ -210,6 +218,7 @@
 			isa = PBXGroup;
 			children = (
 				2087032D19BF55760070E9B3 /* Data.h */,
+				20AA383819D35CF500580981 /* Data.m */,
 				2087033019BF87B70070E9B3 /* User.h */,
 				2087033119BF87B70070E9B3 /* User.m */,
 				200DEABD19BE1DA5001D1E2F /* Conversation.h */,
@@ -218,16 +227,18 @@
 				200DEAC119BE1DAE001D1E2F /* Message.m */,
 				2087032919BF49320070E9B3 /* ParticipantIdentifier.h */,
 				2087032A19BF49320070E9B3 /* ParticipantIdentifier.m */,
+				20AA383219D34C1100580981 /* Whisper.h */,
+				20AA383319D34C1100580981 /* Whisper.m */,
 				206E588519C8AF6E0036F07C /* Link.h */,
 				206E588619C8AF6E0036F07C /* Link.m */,
 				206E588819C8B9D60036F07C /* Song.h */,
 				206E588919C8B9D60036F07C /* Song.m */,
 				206E589B19C8CCD40036F07C /* Picture.h */,
 				206E589C19C8CCD40036F07C /* Picture.m */,
-				206E589E19CA03B20036F07C /* Meta.h */,
-				206E589F19CA03B20036F07C /* Meta.m */,
 				206E58A119CB0E100036F07C /* Like.h */,
 				206E58A219CB0E100036F07C /* Like.m */,
+				206E589E19CA03B20036F07C /* Meta.h */,
+				206E589F19CA03B20036F07C /* Meta.m */,
 			);
 			name = Data;
 			sourceTree = "<group>";
@@ -274,6 +285,8 @@
 				200DEAC719BE22E7001D1E2F /* CoreDataStore.m */,
 				206E587619C7B2A80036F07C /* CoreDataWriter.h */,
 				206E587719C7B2A80036F07C /* CoreDataWriter.m */,
+				20AA383519D359E800580981 /* ConversationDataSource.h */,
+				20AA383619D359E800580981 /* ConversationDataSource.m */,
 			);
 			name = Layer;
 			sourceTree = "<group>";
@@ -454,11 +467,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				20AA383919D35CF500580981 /* Data.m in Sources */,
 				20C37ABE19C616CD00E00E7C /* LayerAPI.m in Sources */,
+				20AA383719D359E800580981 /* ConversationDataSource.m in Sources */,
 				2087033219BF87B70070E9B3 /* User.m in Sources */,
 				206E587819C7B2A80036F07C /* CoreDataWriter.m in Sources */,
 				206E587F19C895DC0036F07C /* EmbedlyAPI.m in Sources */,
 				206E58A019CA03B20036F07C /* Meta.m in Sources */,
+				20AA383419D34C1100580981 /* Whisper.m in Sources */,
 				206E587519C7B1610036F07C /* LayerDataAssembler.m in Sources */,
 				206E589419C8BB750036F07C /* SpotifyManager.m in Sources */,
 				206E589D19C8CCD40036F07C /* Picture.m in Sources */,

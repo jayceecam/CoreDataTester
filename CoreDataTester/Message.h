@@ -16,9 +16,10 @@ typedef NS_ENUM(NSUInteger, MessageKind) {
     MessageKindAll = 0,
     
     MessageKindMessagePlain = 1,
-    MessageKindContentPicture = 2,
-    MessageKindContentLink = 3,
-    MessageKindContentSong = 4,
+    MessageKindMessageWhisper = 2,
+    MessageKindContentPicture = 3,
+    MessageKindContentLink = 4,
+    MessageKindContentSong = 5,
     
     MessageKindActivityLike = 1000,
     
@@ -48,6 +49,8 @@ typedef NS_ENUM(NSUInteger, MessageKind) {
 
 @property(strong,nonatomic) NSDate* createdDate;
 
+//@property(strong,nonatomic) NSSet* audience;
+
 
 
 @property(strong,nonatomic) Conversation* conversation;
@@ -64,19 +67,7 @@ typedef NS_ENUM(NSUInteger, MessageKind) {
 
 
 
-#pragma mark - Text
 
-@property(strong,nonatomic,readonly) NSString* body;
-
-
-#pragma mark - Photo
-
-@property(strong,nonatomic,readonly) NSURL* photoUrl;
-
-
-#pragma mark - Link
-
-@property(strong,nonatomic,readonly) NSURL* linkUrl;
 
 
 @end

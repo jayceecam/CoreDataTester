@@ -217,6 +217,31 @@
         return;
     }
     
+    conversation.lastMessage = message;
+    
+    if (![self.managedObjectContext save:&error]) {
+        [self error:@"message save" error:error messageCompletionBlock:block];
+        return;
+    }
+    
+    if (block) block(message, nil);
+}
+
+- (void)sendWhisperMessage:(Whisper*)whisper inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
+    
+    NSAssert(conversation.kind.integerValue == ConversationKindSidebar, @"cannot save a whisper into a conversation that is not of type ConversationKindSidebar");
+    
+    Message* message = [_dataAssembler assembleMessageFromWhisper:whisper forConversation:conversation];
+    
+    NSError* error = nil;
+    
+    if (![_client sendMessage:message.lyrMessage error:&error]) {
+        [self error:@"message send" error:error messageCompletionBlock:block];
+        return;
+    }
+    
+    conversation.lastMessage = message;
+    
     if (![self.managedObjectContext save:&error]) {
         [self error:@"message save" error:error messageCompletionBlock:block];
         return;
@@ -235,6 +260,8 @@
         [self error:@"link send" error:error messageCompletionBlock:block];
         return;
     }
+    
+    conversation.lastMessage = message;
     
     if (![self.managedObjectContext save:&error]) {
         [self error:@"link save" error:error messageCompletionBlock:block];
@@ -255,6 +282,8 @@
         return;
     }
     
+    conversation.lastMessage = message;
+    
     if (![self.managedObjectContext save:&error]) {
         [self error:@"song save" error:error messageCompletionBlock:block];
         return;
@@ -273,6 +302,8 @@
         [self error:@"picture send" error:error messageCompletionBlock:block];
         return;
     }
+    
+    conversation.lastMessage = message;
     
     if (![self.managedObjectContext save:&error]) {
         [self error:@"picture save" error:error messageCompletionBlock:block];
@@ -293,6 +324,8 @@
         return;
     }
     
+    conversation.lastMessage = message;
+    
     if (![self.managedObjectContext save:&error]) {
         [self error:@"like save" error:error messageCompletionBlock:block];
         return;
@@ -303,12 +336,44 @@
 
 - (void)sendSavedConversation:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block {
     
+    NSAssert(conversation.kind.integerValue == ConversationKindMoment, @"cannot save a moment into a conversation that is not of type ConversationKindMoment");
+    
     NSError* error = nil;
     
     if (![_client sendMessage:conversation.messageMeta.lyrMessage error:&error]) {
         [self error:@"save send" error:error successCompletionBlock:block];
         return;
     }
+    
+    conversation.lastMessage = conversation.messageMeta;
+    
+    if (![self.managedObjectContext save:&error]) {
+        [self error:@"save save" error:error successCompletionBlock:block];
+        return;
+    }
+    
+    if (block) block(YES, nil);
+}
+
+- (void)sendSavedConversation:(Conversation*)conversation withMessage:(NSString*)body completionBlock:(void(^)(BOOL success, NSError* error))block {
+    
+    NSAssert(conversation.kind.integerValue == ConversationKindMoment, @"cannot save a moment into a conversation that is not of type ConversationKindMoment");
+    
+    NSError* error = nil;
+    
+    if (![_client sendMessage:conversation.messageMeta.lyrMessage error:&error]) {
+        [self error:@"save send" error:error successCompletionBlock:block];
+        return;
+    }
+    
+    Message* message = [_dataAssembler assembleMessageFromPlainText:body forConversation:conversation];
+    
+    if (![_client sendMessage:message.lyrMessage error:&error]) {
+        [self error:@"comment send" error:error successCompletionBlock:block];
+        return;
+    }
+    
+    conversation.lastMessage = message;
     
     if (![self.managedObjectContext save:&error]) {
         [self error:@"save save" error:error successCompletionBlock:block];
@@ -362,8 +427,9 @@
 
 #pragma mark - Conversation
 
-- (Conversation*)findOrCreateConversationForParticipants:(NSSet*)participants {
-    Conversation* conversation = [_dataStore getConversationWithParticipants:participants ofKind:ConversationKindChat];
+- (Conversation*)findOrCreateChatWithParticipantIds:(NSSet*)participantIds {
+    
+    Conversation* conversation = [_dataStore getChatWithParticipants:participantIds];
     if (conversation) {
         return conversation;
     }
@@ -371,22 +437,38 @@
         Meta* meta = [[Meta alloc] init];
         meta.conversationKind = @(ConversationKindChat);
         
-        return [_dataAssembler assembleConversationWithParticipants:participants andMeta:meta];
+        return [_dataAssembler assembleChatWithParticipantIds:participantIds andMeta:meta];
     }
 }
 
-- (Conversation*)findOrCreateConversationWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic {
-    Conversation* conversation = [_dataStore getConversationWithParentConversation:parentConversation.identifier messageTopic:messageTopic.identifier];
+- (Conversation*)findOrCreateMomentWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic {
+
+    Conversation* conversation = [_dataStore getMomentWithParentConversation:parentConversation.identifier messageTopic:messageTopic.identifier];
     if (conversation) {
         return conversation;
     }
     else {
         Meta* meta = [[Meta alloc] init];
-        meta.conversationKind = @(ConversationKindChat);
+        meta.conversationKind = @(ConversationKindMoment);
         meta.parentConversationIdentifier = parentConversation.identifier;
         meta.parentMessageIdentifier = messageTopic.identifier;
         
-        return [_dataAssembler assembleConversationWithParentConversation:parentConversation andMessageTopic:messageTopic andMeta:meta];
+        return [_dataAssembler assembleMomentWithParentConversation:parentConversation andMessageTopic:messageTopic andMeta:meta];
+    }
+}
+
+- (Conversation*)findorCreateSidebarWithParentConversation:(Conversation*)parentConversation andParticipants:(NSSet*)participantIds {
+    
+    Conversation* conversation = [_dataStore getSidebarWithParentConversation:parentConversation.identifier audienceIds:participantIds];
+    if (conversation) {
+        return conversation;
+    }
+    else {
+        Meta* meta = [[Meta alloc] init];
+        meta.conversationKind = @(ConversationKindSidebar);
+        meta.parentConversationIdentifier = parentConversation.identifier;
+        
+        return [_dataAssembler assembleSidebarWithParentConversation:parentConversation audience:participantIds andMeta:meta];
     }
 }
 

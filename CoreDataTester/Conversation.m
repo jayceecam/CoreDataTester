@@ -98,7 +98,7 @@
         }
         return NO;
     }
-    if ([*ioValue integerValue] < ConversationKindAll || [*ioValue integerValue] > ConversationKindThread) {
+    if ([*ioValue integerValue] < ConversationKindAll || [*ioValue integerValue] > ConversationKindSidebar) {
         if (outError) {
             *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"kind out of acceptable range"}];
         }

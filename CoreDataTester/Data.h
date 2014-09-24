@@ -12,6 +12,7 @@
 
 #import "Conversation.h"
 #import "Message.h"
+#import "Whisper.h"
 #import "ParticipantIdentifier.h"
 #import "Link.h"
 #import "Song.h"
@@ -22,3 +23,10 @@
 
 #define kErrorDomainData @"error.domain.data"
 
+
+
+@interface Data : NSObject
+
++ (NSValueTransformer*)JSONSetTransformer;
+
+@end

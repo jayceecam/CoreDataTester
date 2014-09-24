@@ -47,8 +47,17 @@
 
 - (NSArray*)getRecentUnreadMessagesForConversation:(NSString*)convoIdentifier ofKind:(MessageKind)kind;
 
-- (Conversation*)getConversationWithParticipants:(NSSet*)participants ofKind:(ConversationKind)kind;
+- (Conversation*)getChatWithParticipants:(NSSet*)participantIds;
 
-- (Conversation*)getConversationWithParentConversation:(NSString*)parentConversationIdentifier messageTopic:(NSString*)messageTopicIdentifier;
+- (Conversation*)getMomentWithParentConversation:(NSString*)parentConversationIdentifier messageTopic:(NSString*)messageTopicIdentifier;
+
+- (Conversation*)getSidebarWithParentConversation:(NSString*)parentConversationIdentifier audienceIds:(NSSet*)audienceIds;
+
+
+// @deprecated
+
+//- (Conversation*)getConversationWithParticipants:(NSSet*)participants ofKind:(ConversationKind)kind;
+//
+//- (Conversation*)getConversationWithParentConversation:(NSString*)parentConversationIdentifier messageTopic:(NSString*)messageTopicIdentifier ofKind:(ConversationKind)kind;
 
 @end
