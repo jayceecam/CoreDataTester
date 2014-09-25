@@ -210,6 +210,45 @@
     return fetchResults;
 }
 
+- (NSArray*)getRecentConversationsForUsers:(NSSet*)userIdentifiers ofConversationKind:(ConversationKind)convoKind andMessageKind:(MessageKind)messageKind {
+    
+    NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
+    
+    if (convoKind == ConversationKindAll) {
+        if (messageKind == MessageKindAll) {
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", ConversationKindUndefined, userIdentifiers];
+        }
+        else {
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@) and (messageTopic.kind = %i)", ConversationKindUndefined, userIdentifiers, messageKind];
+        }
+    }
+    else {
+        if (messageKind == MessageKindAll) {
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", convoKind, userIdentifiers];
+        }
+        else {
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@) and (messageTopic.kind = %i)", convoKind, userIdentifiers, messageKind];
+        }
+    }
+    
+    request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"lastMessage.createdDate" ascending:NO]];
+    
+    NSError* error;
+    NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
+    if (fetchResults == nil) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    
+    for (Conversation* convo in fetchResults) {
+        [_managedObjects setObject:convo forKey:convo.identifier];
+    }
+    
+    return fetchResults;
+}
+
 
 + (NSUInteger)messageFetchLimit {
     return 50;

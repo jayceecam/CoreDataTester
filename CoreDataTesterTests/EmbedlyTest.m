@@ -70,7 +70,7 @@
         [embedlyExpectation fulfill];
     }];
     
-    [self waitForExpectationsWithTimeout:5 handler:^(NSError *error) {
+    [self waitForExpectationsWithTimeout:10 handler:^(NSError *error) {
         
     }];
 }

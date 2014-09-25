@@ -15,7 +15,7 @@
 
 @dynamic identifier, kind, removed;
 
-@dynamic linkedConversations, parentConversation, messages, messageTopic, lastMessage;
+@dynamic linkedConversations, parentConversation, messages, messageTopic, lastMessage, messageMeta;
 
 @dynamic participantIdentifiers;
 

@@ -143,13 +143,13 @@
 
 
 - (void)obtainIdentityTokenWithNonce:(NSString*)nonce completion:(void(^)(NSString* identitiyToken, NSError*error))block {
-    static NSString * const BaseURLString = @"http://localhost:5000/api/v1/auth_layer";
+    static NSString * const BaseURLString = @"http://localhost:5000/api/v1/auth_layer?user_id=1";
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer = [AFJSONRequestSerializer serializer];
     manager.responseSerializer = [AFJSONResponseSerializer serializer];
     
-    NSDictionary* params = @{@"nonce": nonce, @"id": @(1)};
+    NSDictionary* params = @{@"nonce": nonce};
     
     [manager POST:BaseURLString parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
         if (block) block(responseObject[@"response"][@"identity"], nil);

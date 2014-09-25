@@ -40,6 +40,9 @@
 - (NSArray*)getRecentConversationsForUser:(NSString*)userIdentifier ofConversationKind:(ConversationKind)convoKind andMessageKind:(MessageKind)messageKind;
 
 
+- (NSArray*)getRecentConversationsForUsers:(NSSet*)userIdentifiers ofConversationKind:(ConversationKind)convoKind andMessageKind:(MessageKind)messageKind;
+
+
 + (NSUInteger)messageFetchLimit;
 
 

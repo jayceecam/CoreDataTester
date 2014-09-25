@@ -34,6 +34,10 @@
 		2087032B19BF49320070E9B3 /* ParticipantIdentifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 2087032A19BF49320070E9B3 /* ParticipantIdentifier.m */; };
 		2087032C19BF4F8B0070E9B3 /* CoreDataTester.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 200DEA9D19BE1B01001D1E2F /* CoreDataTester.xcdatamodeld */; };
 		2087033219BF87B70070E9B3 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 2087033119BF87B70070E9B3 /* User.m */; };
+		209159A019D465B300EB2BC3 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2091599F19D465B300EB2BC3 /* CFNetwork.framework */; };
+		209159A219D465C600EB2BC3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209159A119D465C600EB2BC3 /* SystemConfiguration.framework */; };
+		209159A419D465CD00EB2BC3 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209159A319D465CD00EB2BC3 /* MobileCoreServices.framework */; };
+		209159A619D465D100EB2BC3 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 209159A519D465D100EB2BC3 /* Security.framework */; };
 		20AA383419D34C1100580981 /* Whisper.m in Sources */ = {isa = PBXBuildFile; fileRef = 20AA383319D34C1100580981 /* Whisper.m */; };
 		20AA383719D359E800580981 /* ConversationDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 20AA383619D359E800580981 /* ConversationDataSource.m */; };
 		20AA383919D35CF500580981 /* Data.m in Sources */ = {isa = PBXBuildFile; fileRef = 20AA383819D35CF500580981 /* Data.m */; };
@@ -104,6 +108,10 @@
 		2087032D19BF55760070E9B3 /* Data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Data.h; sourceTree = "<group>"; };
 		2087033019BF87B70070E9B3 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		2087033119BF87B70070E9B3 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
+		2091599F19D465B300EB2BC3 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		209159A119D465C600EB2BC3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		209159A319D465CD00EB2BC3 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		209159A519D465D100EB2BC3 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		20AA383219D34C1100580981 /* Whisper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Whisper.h; sourceTree = "<group>"; };
 		20AA383319D34C1100580981 /* Whisper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Whisper.m; sourceTree = "<group>"; };
 		20AA383519D359E800580981 /* ConversationDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationDataSource.h; sourceTree = "<group>"; };
@@ -127,6 +135,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				209159A619D465D100EB2BC3 /* Security.framework in Frameworks */,
+				209159A419D465CD00EB2BC3 /* MobileCoreServices.framework in Frameworks */,
+				209159A219D465C600EB2BC3 /* SystemConfiguration.framework in Frameworks */,
+				209159A019D465B300EB2BC3 /* CFNetwork.framework in Frameworks */,
 				206E588C19C8BA130036F07C /* AVFoundation.framework in Frameworks */,
 				206E588E19C8BA820036F07C /* Spotify.framework in Frameworks */,
 				8272C21B8C34491EA9864171 /* libPods.a in Frameworks */,
@@ -294,6 +306,10 @@
 		29B83CDEA3FD4D558D9207EC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				209159A519D465D100EB2BC3 /* Security.framework */,
+				209159A319D465CD00EB2BC3 /* MobileCoreServices.framework */,
+				209159A119D465C600EB2BC3 /* SystemConfiguration.framework */,
+				2091599F19D465B300EB2BC3 /* CFNetwork.framework */,
 				206E588D19C8BA820036F07C /* Spotify.framework */,
 				206E588B19C8BA130036F07C /* AVFoundation.framework */,
 				4FC799625CE7485B88418279 /* libPods.a */,
@@ -619,6 +635,7 @@
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = CoreDataTester/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -637,6 +654,7 @@
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = CoreDataTester/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

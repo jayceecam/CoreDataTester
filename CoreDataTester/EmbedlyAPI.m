@@ -24,7 +24,7 @@
 
 - (void)extractURL:(NSURL*)url completionBlock:(void(^)(EmbedlyExtractionResult* result, NSError* error))block {
     CGFloat maxW = [[UIScreen mainScreen] bounds].size.width;
-    NSDictionary* params = @{@"maxwidth": [NSString stringWithFormat:@"%i", maxW], @"chars": @"200"};
+    NSDictionary* params = @{@"maxwidth": [NSString stringWithFormat:@"%i", (int)maxW], @"chars": @"200"};
     [self callExtract:url.absoluteString params:params optimizeImages:0 completionBlock:^(NSDictionary* response, NSError *error) {
         if (response) {
             EmbedlyExtractionResult* result = [[EmbedlyExtractionResult alloc] init];
