@@ -298,7 +298,7 @@
     XCTAssert(parentConvo != nil);
     
     childConvo.parentConversation = parentConvo;
-    childConvo.messageTopic = parentConvo.lastMessage;
+    childConvo.parentMessage = parentConvo.lastMessage;
     
     [self save];
     
@@ -311,6 +311,52 @@
     childConvo = [_dataAccessor getConversation:@"t1.c3"];
     
     XCTAssert([childConvo.parentConversation.identifier isEqualToString:@"t1.c1"]);
+}
+
+- (void)testConcurrency {
+    
+    [[NSThread currentThread] setName:@"TEST"];
+    
+    NSLog(@"testing concurrency %@", [[NSThread currentThread] name]);
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"concurrency"];
+    
+    //create a ton of data
+    [self.managedObjectContext performBlock:^{
+        for (int i=0; i<1000; i++) {
+            Conversation* conversation = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
+            conversation.identifier = [NSString stringWithFormat:@"cid_%i", i];
+            conversation.kind = @(ConversationKindChat);
+            
+            Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
+            message.identifier = [NSString stringWithFormat:@"mid_%i", i];
+            message.creatorIdentifier = [NSString stringWithFormat:@"uid_%i", i];
+            message.createdDate = [NSDate date];
+            message.kind = @(MessageKindMessagePlain);
+            message.conversation = conversation;
+            
+            ParticipantIdentifier* participant = (ParticipantIdentifier*)[NSEntityDescription insertNewObjectForEntityForName:@"ParticipantIdentifier" inManagedObjectContext:self.managedObjectContext];
+            participant.identifier = [NSString stringWithFormat:@"pid_0_%i", i];
+            participant.conversation = conversation;
+            
+            participant = (ParticipantIdentifier*)[NSEntityDescription insertNewObjectForEntityForName:@"ParticipantIdentifier" inManagedObjectContext:self.managedObjectContext];
+            participant.identifier = [NSString stringWithFormat:@"pid_1_%i", i];
+            participant.conversation = conversation;
+        }
+        
+        [self save];
+        
+        [expectation fulfill];
+        
+        NSLog(@"done %@", [[NSThread currentThread] name]);
+    }];
+    
+    NSLog(@"waiting %@", [[NSThread currentThread] name]);
+    
+    [self waitForExpectationsWithTimeout:3 handler:^(NSError *error) {
+        NSArray* convos = [_dataAccessor getRecentConversationsOfKind:ConversationKindAll];
+        XCTAssert(convos.count == 1000);
+    }];
 }
 
 

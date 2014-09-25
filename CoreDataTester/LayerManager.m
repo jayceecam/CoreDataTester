@@ -50,6 +50,17 @@
     return self;
 }
 
+- (void)registerObjectObservation {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
+                                                 name:LYRClientObjectsDidChangeNotification object:_client];
+}
+
+- (void)unregisterObjectObservation {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:LYRClientObjectsDidChangeNotification object:_client];
+}
+
+
 
 #pragma mark - Public
 
@@ -132,8 +143,8 @@
             if (c.lastMessage) {
                 [messages addObject:c.lastMessage];
             }
-            if (c.messageTopic) {
-                [messages addObject:c.messageTopic];
+            if (c.parentMessage) {
+                [messages addObject:c.parentMessage];
             }
         }
         
@@ -144,7 +155,7 @@
             cRef.lyrConversation = c;
         }
         
-        // Hydrate LYRMessages for lastMessage and messageTopic
+        // Hydrate LYRMessages for lastMessage and parentMessage
         [self hydrateMessages:messages.copy];
     }
 }
@@ -218,6 +229,7 @@
     }
     
     conversation.lastMessage = message;
+    conversation.parentConversation.lastMessage = message;
     
     if (![self.managedObjectContext save:&error]) {
         [self error:@"message save" error:error messageCompletionBlock:block];
@@ -241,6 +253,7 @@
     }
     
     conversation.lastMessage = message;
+    conversation.parentConversation.lastMessage = message;
     
     if (![self.managedObjectContext save:&error]) {
         [self error:@"message save" error:error messageCompletionBlock:block];
@@ -262,6 +275,7 @@
     }
     
     conversation.lastMessage = message;
+    conversation.parentConversation.lastMessage = message;
     
     if (![self.managedObjectContext save:&error]) {
         [self error:@"link save" error:error messageCompletionBlock:block];
@@ -283,6 +297,7 @@
     }
     
     conversation.lastMessage = message;
+    conversation.parentConversation.lastMessage = message;
     
     if (![self.managedObjectContext save:&error]) {
         [self error:@"song save" error:error messageCompletionBlock:block];
@@ -304,6 +319,7 @@
     }
     
     conversation.lastMessage = message;
+    conversation.parentConversation.lastMessage = message;
     
     if (![self.managedObjectContext save:&error]) {
         [self error:@"picture save" error:error messageCompletionBlock:block];
@@ -325,6 +341,7 @@
     }
     
     conversation.lastMessage = message;
+    conversation.parentConversation.lastMessage = message;
     
     if (![self.managedObjectContext save:&error]) {
         [self error:@"like save" error:error messageCompletionBlock:block];
@@ -346,6 +363,7 @@
     }
     
     conversation.lastMessage = conversation.messageMeta;
+    conversation.parentConversation.lastMessage = conversation.messageMeta;
     
     if (![self.managedObjectContext save:&error]) {
         [self error:@"save save" error:error successCompletionBlock:block];
@@ -374,6 +392,7 @@
     }
     
     conversation.lastMessage = message;
+    conversation.parentConversation.lastMessage = message;
     
     if (![self.managedObjectContext save:&error]) {
         [self error:@"save save" error:error successCompletionBlock:block];
@@ -441,9 +460,9 @@
     }
 }
 
-- (Conversation*)findOrCreateMomentWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic {
+- (Conversation*)findOrCreateMomentWithParentConversation:(Conversation*)parentConversation andParentMessage:(Message*)parentMessage {
 
-    Conversation* conversation = [_dataStore getMomentWithParentConversation:parentConversation.identifier messageTopic:messageTopic.identifier];
+    Conversation* conversation = [_dataStore getMomentWithParentConversation:parentConversation.identifier parentMessage:parentMessage.identifier];
     if (conversation) {
         return conversation;
     }
@@ -451,9 +470,9 @@
         Meta* meta = [[Meta alloc] init];
         meta.conversationKind = @(ConversationKindMoment);
         meta.parentConversationIdentifier = parentConversation.identifier;
-        meta.parentMessageIdentifier = messageTopic.identifier;
+        meta.parentMessageIdentifier = parentMessage.identifier;
         
-        return [_dataAssembler assembleMomentWithParentConversation:parentConversation andMessageTopic:messageTopic andMeta:meta];
+        return [_dataAssembler assembleMomentWithParentConversation:parentConversation andParentMessage:parentMessage andMeta:meta];
     }
 }
 
@@ -500,17 +519,20 @@
 - (void)layerClient:(LYRClient *)client didFinishSynchronizationWithChanges:(NSArray *)changes {
     NSLog(@"Layer Client did finish synchronization");
     
+    // TODO: always consider handling this sync on a new private queue
+    // TODO: also ensure didReceiveLayerObjectsDidChangeNotification: is not also being called here
+    
     for (NSDictionary *change in changes) {
         id changeObject = [change objectForKey:LYRObjectChangeObjectKey];
         if ([changeObject isKindOfClass:[LYRConversation class]]) {
             LYRConversation* conversation = changeObject;
             LYRObjectChangeType changeType = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
-            [_dataProcessor processConversation:conversation changeType:changeType];
+            [_dataProcessor processConversation:conversation changeType:changeType changes:change];
         }
         else {
             LYRMessage* message = changeObject;
             LYRObjectChangeType changeType = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
-            [_dataProcessor processMessage:message changeType:changeType];
+            [_dataProcessor processMessage:message changeType:changeType changes:change];
         }
     }
 }
@@ -547,5 +569,26 @@
 }
 
 
+#pragma mark - Notification Observation
+
+- (void)didReceiveLayerObjectsDidChangeNotification:(NSNotification*)note {
+    NSLog(@"didReceiveLayerObjectsDidChangeNotification");
+    
+    NSArray *changes = [note.userInfo objectForKey:LYRClientObjectChangesUserInfoKey];
+    
+    for (NSDictionary *change in changes) {
+        id changeObject = [change objectForKey:LYRObjectChangeObjectKey];
+        if ([changeObject isKindOfClass:[LYRConversation class]]) {
+            LYRConversation* conversation = changeObject;
+            LYRObjectChangeType changeType = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
+            [_dataProcessor processConversation:conversation changeType:changeType changes:change];
+        }
+        else {
+            LYRMessage* message = changeObject;
+            LYRObjectChangeType changeType = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
+            [_dataProcessor processMessage:message changeType:changeType changes:change];
+        }
+    }
+}
 
 @end

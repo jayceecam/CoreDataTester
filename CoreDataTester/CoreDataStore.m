@@ -180,7 +180,7 @@
             request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", ConversationKindUndefined, userIdentifier];
         }
         else {
-            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@) and (messageTopic.kind = %i)", ConversationKindUndefined, userIdentifier, messageKind];
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@) and (parentMessage.kind = %i)", ConversationKindUndefined, userIdentifier, messageKind];
         }
     }
     else {
@@ -188,7 +188,7 @@
             request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@)", convoKind, userIdentifier];
         }
         else {
-            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@) and (messageTopic.kind = %i)", convoKind, userIdentifier, messageKind];
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ANY participantIdentifiers.identifier LIKE %@) and (parentMessage.kind = %i)", convoKind, userIdentifier, messageKind];
         }
     }
     
@@ -219,7 +219,7 @@
             request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", ConversationKindUndefined, userIdentifiers];
         }
         else {
-            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@) and (messageTopic.kind = %i)", ConversationKindUndefined, userIdentifiers, messageKind];
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@) and (parentMessage.kind = %i)", ConversationKindUndefined, userIdentifiers, messageKind];
         }
     }
     else {
@@ -227,7 +227,7 @@
             request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", convoKind, userIdentifiers];
         }
         else {
-            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@) and (messageTopic.kind = %i)", convoKind, userIdentifiers, messageKind];
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@) and (parentMessage.kind = %i)", convoKind, userIdentifiers, messageKind];
         }
     }
     
@@ -312,11 +312,11 @@
     return fetchResults.firstObject;
 }
 
-- (Conversation*)getMomentWithParentConversation:(NSString*)parentConversationIdentifier messageTopic:(NSString*)messageTopicIdentifier {
+- (Conversation*)getMomentWithParentConversation:(NSString*)parentConversationIdentifier parentMessage:(NSString*)parentMessageIdentifier {
     
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
-    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation.identifier = %@) and (messageTopic.identifier = %@)", ConversationKindMoment, parentConversationIdentifier, messageTopicIdentifier];
+    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation.identifier = %@) and (parentMessage.identifier = %@)", ConversationKindMoment, parentConversationIdentifier, parentMessageIdentifier];
     
     NSError* error;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
@@ -389,11 +389,11 @@
 //    return fetchResults.firstObject;
 //}
 //
-//- (Conversation*)getConversationWithParentConversation:(NSString*)parentConversationIdentifier messageTopic:(NSString*)messageTopicIdentifier ofKind:(ConversationKind)kind {
+//- (Conversation*)getConversationWithParentConversation:(NSString*)parentConversationIdentifier parentMessage:(NSString*)parentMessageIdentifier ofKind:(ConversationKind)kind {
 //    
 //    NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
 //    
-//    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation.identifier = %@) and (messageTopic.identifier = %@)", kind, parentConversationIdentifier, messageTopicIdentifier];
+//    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation.identifier = %@) and (parentMessage.identifier = %@)", kind, parentConversationIdentifier, parentMessageIdentifier];
 //    
 //    NSError* error;
 //    NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];

@@ -45,13 +45,15 @@ typedef enum : NSUInteger {
 @property(strong,nonatomic) NSSet* linkedConversations;
 
 
+@property(strong,nonatomic) Message* parentMessage;
+
 
 @property(strong,nonatomic) NSSet* messages;
 
 @property(strong,nonatomic) NSSet* participantIdentifiers;
 
 
-@property(strong,nonatomic) Message* messageTopic;
+
 
 @property(strong,nonatomic) Message* messageMeta;
 

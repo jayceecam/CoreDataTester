@@ -49,15 +49,9 @@ typedef NS_ENUM(NSUInteger, MessageKind) {
 
 @property(strong,nonatomic) NSDate* createdDate;
 
-//@property(strong,nonatomic) NSSet* audience;
-
 
 
 @property(strong,nonatomic) Conversation* conversation;
-
-@property(strong,nonatomic) Message* parentMessage;
-
-@property(strong,nonatomic) NSSet* linkedMessages;
 
 
 

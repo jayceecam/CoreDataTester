@@ -8,6 +8,8 @@
 
 #import "LayerDataProcessor.h"
 
+#import "LayerDataAssembler.h"
+
 
 NSString *const DataObjectChangeTypeKey = @"DataObjectChangeTypeKey";
 
@@ -28,7 +30,7 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
     return self;
 }
 
-- (Conversation*)processConversation:(LYRConversation*)lyrConversation changeType:(LYRObjectChangeType)changeType {
+- (Conversation*)processConversation:(LYRConversation*)lyrConversation changeType:(LYRObjectChangeType)changeType changes:(NSDictionary*)changes {
     Conversation* conversation = nil;
     
     switch (changeType) {
@@ -56,9 +58,33 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
             break;
         }
         case LYRObjectChangeTypeUpdate: {
+            NSString* changeKey = changes[LYRObjectChangePropertyKey];
+            NSLog(@"LYRConversation property %@ changed from %@ to %@", changeKey, changes[LYRObjectChangeOldValueKey], changes[LYRObjectChangeNewValueKey]);
+            
             conversation = [_dataStore getConversation:lyrConversation.identifier.absoluteString];
             if (conversation) {
-                conversation.removed = @(lyrConversation.isDeleted);
+                if ([changeKey isEqualToString:@"identifier"]) {
+                    
+                }
+                if ([changeKey isEqualToString:@"participants"]) {
+                    
+                }
+                if ([changeKey isEqualToString:@"createdAt"]) {
+                    
+                }
+                if ([changeKey isEqualToString:@"lastMessage"]) {
+                    Message* lastMessage = [_dataStore getMessage:lyrConversation.lastMessage.identifier.absoluteString];
+                    if (lastMessage) {
+                        conversation.lastMessage = lastMessage;
+                    }
+                    else {
+                        NSLog(@"Message cannot be found for lastMessage update");
+                    }
+                }
+                if ([changeKey isEqualToString:@"isDeleted"]) {
+                    conversation.removed = @(lyrConversation.isDeleted);
+                }
+                
                 conversation.lyrConversation = lyrConversation;
             }
             else {
@@ -96,28 +122,135 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
         return nil;
     }
     
+    [[NSNotificationCenter defaultCenter] postNotificationName:<#(NSString *)#> object:<#(id)#> userInfo:<#(NSDictionary *)#>]
+    
     return conversation;
 }
 
-- (Message*)processMessage:(LYRMessage*)lyrMessage changeType:(LYRObjectChangeType)changeType {
+- (Message*)processMessage:(LYRMessage*)lyrMessage changeType:(LYRObjectChangeType)changeType changes:(NSDictionary*)changes {
+    Message* message = nil;
+    
     switch (changeType) {
         case LYRObjectChangeTypeCreate: {
-            // look for meta
-            
-        }
+            message = [_dataStore getMessage:lyrMessage.identifier.absoluteString];
+            if (message) {
+                message.removed = @(lyrMessage.isDeleted);
+                message.lyrMessage = lyrMessage;
+            }
+            else {
+                Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
+                message.identifier = lyrMessage.identifier.absoluteString;
+                message.removed = @(lyrMessage.isDeleted);
+                message.lyrMessage = lyrMessage;
+                message.creatorIdentifier = lyrMessage.sentByUserID;
+                
+                LYRMessagePart* part = lyrMessage.parts[0];
+                MessageKind kind = [LayerDataAssembler messageKindFromMime:part.MIMEType];
+                message.kind = @(kind);
+                message.createdDate = lyrMessage.sentAt;
+                message.conversation = [_dataStore getConversation:lyrMessage.conversation.identifier.absoluteString];
+                
+                [self postProcessMessage:message];
+            }
             break;
+        }
         case LYRObjectChangeTypeUpdate: {
             
-        }
-            break;
-        case LYRObjectChangeTypeDelete: {
+            NSString* changeKey = changes[LYRObjectChangePropertyKey];
+            NSLog(@"LYRMessage property %@ changed from %@ to %@", changeKey, changes[LYRObjectChangeOldValueKey], changes[LYRObjectChangeNewValueKey]);
             
-        }
+            message = [_dataStore getMessage:lyrMessage.identifier.absoluteString];
+            
+            if (message) {
+                if ([changeKey isEqualToString:@"identifier"]) {
+                    
+                }
+                if ([changeKey isEqualToString:@"index"]) {
+                    
+                }
+                if ([changeKey isEqualToString:@"conversation"]) {
+                    
+                }
+                if ([changeKey isEqualToString:@"parts"]) {
+                    
+                }
+                if ([changeKey isEqualToString:@"isSent"]) {
+                    
+                }
+                if ([changeKey isEqualToString:@"isDeleted"]) {
+                    message.removed = @(lyrMessage.isDeleted);
+                }
+                if ([changeKey isEqualToString:@"sentAt"]) {
+                    
+                }
+                if ([changeKey isEqualToString:@"receivedAt"]) {
+                    
+                }
+                if ([changeKey isEqualToString:@"sentByUserID"]) {
+                    
+                }
+                if ([changeKey isEqualToString:@"recipientStatusByUserID"]) {
+                    
+                }
+                
+                message.lyrMessage = lyrMessage;
+            }
+            else {
+                NSLog(@"unable to find existing Message for UPDATE");
+                Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
+                message.identifier = lyrMessage.identifier.absoluteString;
+                message.removed = @(lyrMessage.isDeleted);
+                message.lyrMessage = lyrMessage;
+                message.creatorIdentifier = lyrMessage.sentByUserID;
+                
+                LYRMessagePart* part = lyrMessage.parts[0];
+                MessageKind kind = [LayerDataAssembler messageKindFromMime:part.MIMEType];
+                message.kind = @(kind);
+                message.createdDate = lyrMessage.sentAt;
+                message.conversation = [_dataStore getConversation:lyrMessage.conversation.identifier.absoluteString];
+                
+                [self postProcessMessage:message];
+            }
+            
+            [self postProcessMessage:message];
+            
             break;
+        }
+        case LYRObjectChangeTypeDelete: {
+            message = [_dataStore getMessage:lyrMessage.identifier.absoluteString];
+            if (message) {
+                [self.managedObjectContext deleteObject:message];
+            }
+            break;
+        }
     }
-    return nil;
+    
+    NSError* error = nil;
+    
+    if (![self.managedObjectContext save:&error]) {
+        [self error:@"process message" error:error];
+        return nil;
+    }
+    
+    return message;
 }
 
+- (void)postProcessMessage:(Message*)message {
+    if (message.kind.integerValue == MessageKindMeta) {
+        Meta* meta = [LayerDataAssembler disassembleMetaFromMessage:message];
+        message.conversation.kind = meta.conversationKind;
+        if (meta.parentConversationIdentifier && meta.parentMessageIdentifier) {
+            message.conversation.parentConversation = [_dataStore getConversation:meta.parentConversationIdentifier];
+            message.conversation.parentMessage = [_dataStore getMessage:meta.parentMessageIdentifier];
+        }
+        message.conversation.messageMeta = message;
+    }
+    else {
+        if ([message.conversation.lastMessage.createdDate laterDate:message.createdDate] == message.createdDate) {
+            message.conversation.lastMessage = message;
+        }
+    }
+}
 
 - (BOOL)error:(NSString*)errorReason error:(NSError*)error {
     if (error) {

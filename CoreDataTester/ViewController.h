@@ -10,6 +10,9 @@
 
 @interface ViewController : UIViewController
 
+- (IBAction)sendMessage:(id)sender;
+
+
 
 @end
 

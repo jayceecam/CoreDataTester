@@ -46,30 +46,34 @@
 
 #pragma mark - Message Disassembly
 
-- (NSString*)disassemblePlainTextFromMessage:(Message*)message;
++ (NSString*)disassemblePlainTextFromMessage:(Message*)message;
 
-- (Whisper*)disassembleWhisperFromMessage:(Message*)message;
++ (Whisper*)disassembleWhisperFromMessage:(Message*)message;
 
-- (Link*)disassembleLinkFromMessage:(Message*)message;
++ (Link*)disassembleLinkFromMessage:(Message*)message;
 
-- (Song*)disassembleSongFromMessage:(Message*)message;
++ (Song*)disassembleSongFromMessage:(Message*)message;
 
-- (Picture*)disassemblePictureFromMessage:(Message*)message;
++ (Picture*)disassemblePictureFromMessage:(Message*)message;
 
-- (Meta*)disassembleMetaFromMessage:(Message*)message;
++ (Meta*)disassembleMetaFromMessage:(Message*)message;
 
-- (Like*)disassembleLikeFromMessage:(Message*)message;
++ (Like*)disassembleLikeFromMessage:(Message*)message;
 
 
-- (id)disassembleObjectFromMessage:(Message*)message;
++ (id)disassembleObjectFromMessage:(Message*)message;
 
+
+#pragma mark - Util
+
++ (MessageKind)messageKindFromMime:(NSString*)mimeType;
 
 
 #pragma mark - Conversation Assembly
 
 - (Conversation*)assembleChatWithParticipantIds:(NSSet*)participantIds andMeta:(Meta*)meta;
 
-- (Conversation*)assembleMomentWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic andMeta:(Meta*)meta;
+- (Conversation*)assembleMomentWithParentConversation:(Conversation*)parentConversation andParentMessage:(Message*)parentMessage andMeta:(Meta*)meta;
 
 - (Conversation*)assembleSidebarWithParentConversation:(Conversation*)parentConversation audience:(NSSet*)audienceIds andMeta:(Meta*)meta;
 

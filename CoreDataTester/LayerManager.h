@@ -97,7 +97,7 @@
 
 - (Conversation*)findOrCreateChatWithParticipantIds:(NSSet*)participantIds;
 
-- (Conversation*)findOrCreateMomentWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic;
+- (Conversation*)findOrCreateMomentWithParentConversation:(Conversation*)parentConversation andParentMessage:(Message*)parentMessage;
 
 - (Conversation*)findorCreateSidebarWithParentConversation:(Conversation*)parentConversation andParticipants:(NSSet*)participantIds;
 

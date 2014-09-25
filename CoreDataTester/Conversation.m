@@ -15,7 +15,7 @@
 
 @dynamic identifier, kind, removed;
 
-@dynamic linkedConversations, parentConversation, messages, messageTopic, lastMessage, messageMeta;
+@dynamic linkedConversations, parentConversation, messages, parentMessage, lastMessage, messageMeta;
 
 @dynamic participantIdentifiers;
 
@@ -114,22 +114,22 @@
 }
 
 - (BOOL)validateConsistency:(NSError **)error {
-    if (self.parentConversation || self.messageTopic) {
+    if (self.parentConversation || self.parentMessage) {
         if (!self.parentConversation) {
             if (error) {
-                *error = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"messageTopic set but does not have parentConversation"}];
+                *error = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"parentMessage set but does not have parentConversation"}];
             }
             return NO;
         }
-        if (!self.messageTopic) {
+        if (!self.parentMessage) {
             if (error) {
-                *error = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"parentConversation set but does not have messageTopic"}];
+                *error = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"parentConversation set but does not have parentMessage"}];
             }
             return NO;
         }
-        if ([self.messageTopic.conversation.identifier isEqualToString:self.identifier]) {
+        if ([self.parentMessage.conversation.identifier isEqualToString:self.identifier]) {
             if (error) {
-                *error = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"messageTopic must belong to another conversation"}];
+                *error = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"parentMessage must belong to another conversation"}];
             }
             return NO;
         }

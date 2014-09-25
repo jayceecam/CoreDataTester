@@ -22,6 +22,9 @@ typedef NS_ENUM(NSInteger, DataObjectChangeType) {
 };
 
 
+extern NSString *const DataObjectChangeKey;
+
+
 /**
  @abstract A key into a change dictionary describing the change type. @see `DataObjectChangeType` for possible types.
  */
@@ -49,8 +52,19 @@ extern NSString *const DataObjectChangeNewValueKey; // The value after synchroni
 @property(strong,nonatomic) LYRClient* client;
 
 
-- (Conversation*)processConversation:(LYRConversation*)conversation changeType:(LYRObjectChangeType)changeType;
+- (Conversation*)processConversation:(LYRConversation*)conversation changeType:(LYRObjectChangeType)changeType changes:(NSDictionary*)changes;
 
-- (Message*)processMessage:(LYRMessage*)message changeType:(LYRObjectChangeType)changeType;
+- (Message*)processMessage:(LYRMessage*)message changeType:(LYRObjectChangeType)changeType changes:(NSDictionary*)changes;
+
+// notify new conversation
+// notify updated conversation
+// notify deleted conversation
+
+// notify new message for conversation
+// notify updated message for conversation
+
+//
+// observe across all conversations / messages
+// observe for single conversation
 
 @end

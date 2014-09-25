@@ -206,12 +206,12 @@
 
 #pragma mark Disassembly
 
-- (NSString*)disassemblePlainTextFromMessage:(Message*)message {
++ (NSString*)disassemblePlainTextFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     return [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
 }
 
-- (Whisper*)disassembleWhisperFromMessage:(Message*)message {
++ (Whisper*)disassembleWhisperFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     
     NSError* error = nil;
@@ -226,7 +226,7 @@
     return [Whisper whisperWithJsonRepresentation:json];
 }
 
-- (Link*)disassembleLinkFromMessage:(Message*)message {
++ (Link*)disassembleLinkFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     
     NSError* error = nil;
@@ -241,7 +241,7 @@
     return [Link linkWithJsonRepresentation:json];
 }
 
-- (Song*)disassembleSongFromMessage:(Message*)message {
++ (Song*)disassembleSongFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     
     NSError* error = nil;
@@ -256,7 +256,7 @@
     return [Song songWithJsonRepresentation:json];
 }
 
-- (Picture*)disassemblePictureFromMessage:(Message*)message {
++ (Picture*)disassemblePictureFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     
     NSError* error = nil;
@@ -271,7 +271,7 @@
     return [Picture pictureWithJsonRepresentation:json];
 }
 
-- (Meta*)disassembleMetaFromMessage:(Message*)message {
++ (Meta*)disassembleMetaFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     
     NSError* error = nil;
@@ -286,7 +286,7 @@
     return [Meta metaWithJsonRepresentation:json];
 }
 
-- (Like*)disassembleLikeFromMessage:(Message*)message {
++ (Like*)disassembleLikeFromMessage:(Message*)message {
     LYRMessagePart* part = message.lyrMessage.parts[0];
     
     NSError* error = nil;
@@ -302,7 +302,7 @@
 }
 
 
-- (id)disassembleObjectFromMessage:(Message*)message {
++ (id)disassembleObjectFromMessage:(Message*)message {
     switch (message.kind.integerValue) {
         case MessageKindMessagePlain:
             return [self disassemblePlainTextFromMessage:message];
@@ -323,6 +323,29 @@
             NSAssert(NO, @"reached end of disassempleObject function");
             return nil;
     }
+}
+
+
+#pragma mark - Util
+
++ (MessageKind)messageKindFromMime:(NSString*)mimeType {
+    if ([mimeType isEqualToString:@"text/plain"])
+        return MessageKindMessagePlain;
+    if ([mimeType isEqualToString:[Whisper mimeType]])
+        return MessageKindMessageWhisper;
+    if ([mimeType isEqualToString:[Link mimeType]])
+        return MessageKindContentLink;
+    if ([mimeType isEqualToString:[Song mimeType]])
+        return MessageKindContentSong;
+    if ([mimeType isEqualToString:[Picture mimeType]])
+        return MessageKindContentPicture;
+    if ([mimeType isEqualToString:[Like mimeType]])
+        return MessageKindActivityLike;
+    if ([mimeType isEqualToString:[Meta mimeType]])
+        return MessageKindMeta;
+    
+    NSAssert(NO, @"unable to detect messageKind from mime %@", mimeType);
+    return 0;
 }
 
 
@@ -358,7 +381,7 @@
     return conversation;
 }
 
-- (Conversation*)assembleMomentWithParentConversation:(Conversation*)parentConversation andMessageTopic:(Message*)messageTopic andMeta:(Meta*)meta {
+- (Conversation*)assembleMomentWithParentConversation:(Conversation*)parentConversation andParentMessage:(Message*)parentMessage andMeta:(Meta*)meta {
     
     NSMutableSet* participantIds = [NSMutableSet setWithCapacity:parentConversation.participantIdentifiers.count];
     for (ParticipantIdentifier* pi in parentConversation.participantIdentifiers) {
@@ -370,17 +393,17 @@
     Conversation* conversation = [self _assembleConversationWithParticipantIds:participantIds andMeta:meta];
     
     conversation.parentConversation = parentConversation;
-    conversation.messageTopic = messageTopic;
-    conversation.lastMessage = messageTopic;
+    conversation.parentMessage = parentMessage;
+    conversation.lastMessage = parentMessage;
     
     return conversation;
 }
 
-- (Conversation*)assembleSidebarWithParentConversation:(Conversation*)parentConversation participantIds:(NSSet*)participantIds andMeta:(Meta*)meta {
+- (Conversation*)assembleSidebarWithParentConversation:(Conversation*)parentConversation audience:(NSSet*)audienceIds andMeta:(Meta*)meta {
     
     NSAssert(meta.conversationKind.integerValue == ConversationKindSidebar, @"meta.conversationKind != ConversationKindSidebar");
     
-    Conversation* conversation = [self _assembleConversationWithParticipantIds:participantIds andMeta:meta];
+    Conversation* conversation = [self _assembleConversationWithParticipantIds:audienceIds andMeta:meta];
     
     conversation.parentConversation = parentConversation;
     

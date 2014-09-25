@@ -52,7 +52,7 @@
 
 - (Conversation*)getChatWithParticipants:(NSSet*)participantIds;
 
-- (Conversation*)getMomentWithParentConversation:(NSString*)parentConversationIdentifier messageTopic:(NSString*)messageTopicIdentifier;
+- (Conversation*)getMomentWithParentConversation:(NSString*)parentConversationIdentifier parentMessage:(NSString*)parentMessageIdentifier;
 
 - (Conversation*)getSidebarWithParentConversation:(NSString*)parentConversationIdentifier audienceIds:(NSSet*)audienceIds;
 
@@ -61,6 +61,6 @@
 
 //- (Conversation*)getConversationWithParticipants:(NSSet*)participants ofKind:(ConversationKind)kind;
 //
-//- (Conversation*)getConversationWithParentConversation:(NSString*)parentConversationIdentifier messageTopic:(NSString*)messageTopicIdentifier ofKind:(ConversationKind)kind;
+//- (Conversation*)getConversationWithParentConversation:(NSString*)parentConversationIdentifier parentMessage:(NSString*)parentMessageIdentifier ofKind:(ConversationKind)kind;
 
 @end
