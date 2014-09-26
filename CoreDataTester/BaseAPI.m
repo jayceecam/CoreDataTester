@@ -17,6 +17,10 @@ NSString *const KeychainAuthenticationTokenKey = @"com.acme.Acme";
 
 static KeychainItemWrapper *keychainItem = nil;
 
+static NSString* testingUserId = nil;
+
+
+
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -39,6 +43,8 @@ static KeychainItemWrapper *keychainItem = nil;
         manager.requestSerializer.timeoutInterval = timeoutInterval;
     if (self.hasAuth)
         [manager.requestSerializer setValue:self.password forHTTPHeaderField:@"xHN-AuthToken"];
+    if (self.hasAuthForTesting)
+        [manager.requestSerializer setValue:testingUserId forHTTPHeaderField:@"xHN-UserIdTesting"];
     return manager;
 }
 
@@ -199,6 +205,10 @@ NSError* BaseAPIErrorWithDescription(NSString* description) {
     return !!self.username.length && !!self.password.length;
 }
 
++ (BOOL)hasAuthForTesting {
+    return testingUserId;
+}
+
 + (void)clearAuth {
     [keychainItem resetKeychainItem];
 }
@@ -207,6 +217,10 @@ NSError* BaseAPIErrorWithDescription(NSString* description) {
     // TODO: also store locally in an encrypted file to avoid issues reading from keystore so frequently
     [keychainItem setObject:username forKey:(__bridge id)kSecAttrAccount];
     [keychainItem setObject:password forKey:(__bridge id)kSecValueData];
+}
+
++ (void)setUserIdForTesting:(NSString*)userId {
+    testingUserId = userId;
 }
 
 + (void)resetUsernameAndPassword {

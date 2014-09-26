@@ -9,28 +9,14 @@
 #import "Message.h"
 
 
-@interface Message ()
-
-@property(strong,nonatomic) NSString* body;
-
-@property(strong,nonatomic) NSURL* photoUrl;
-
-@property(strong,nonatomic) NSURL* linkUrl;
-
-@end
-
 
 
 
 @implementation Message
 
-@dynamic identifier, creatorIdentifier, kind, hidden, removed, read, createdDate;
+@dynamic identifier, creatorIdentifier, kind, hidden, removed, read, createdDate, conversation;
 
-@dynamic conversation, parentMessage, linkedMessages;
-
-@dynamic body, photoUrl, linkUrl;
-
-@dynamic lyrMessage;
+@synthesize lyrMessage;
 
 
 - (void)awakeFromInsert {
@@ -42,6 +28,14 @@
 
 - (void)awakeFromFetch {
     [super awakeFromFetch];
+}
+
+- (BOOL)isSent {
+    return self.lyrMessage.isSent;
+}
+
+- (NSDictionary*)recipientStatusByUserID {
+    return self.lyrMessage.recipientStatusByUserID;
 }
 
 - (BOOL)validateRemoved:(id *)ioValue error:(NSError **)outError {
@@ -101,9 +95,9 @@
         }
         return NO;
     }
-    if ([*ioValue integerValue] < MessageKindAll || [*ioValue integerValue] > MessageKindActivityLike) {
+    if ([*ioValue integerValue] == MessageKindAll) {
         if (outError) {
-            *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"kind out of acceptable range"}];
+            *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"kind cannot be MessageKindAll"}];
         }
         return NO;
     }

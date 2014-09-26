@@ -12,6 +12,9 @@
 
 @property(strong,nonatomic) NSString* authUrl;
 
+// For testing purposes
+@property(strong,nonatomic) NSString* userIdOverride;
+
 - (AFHTTPRequestOperation*)authenticateWithNonce:(NSString*)nonce block:(APIBlock)block;
 
 @end

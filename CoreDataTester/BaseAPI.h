@@ -45,4 +45,7 @@ typedef void(^AsyncSuccessHandleBlock)(id ob, AsyncSuccessCompletionBlock contin
 + (BOOL)hasAuth;
 + (void)clearAuth;
 
++ (void)setUsername:(NSString*)username andPassword:(NSString*)password;
++ (void)setUserIdForTesting:(NSString*)userId;
+
 @end

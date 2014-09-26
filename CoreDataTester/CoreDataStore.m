@@ -39,9 +39,9 @@
     
     request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"lastMessage.createdDate" ascending:NO]];
     
-    NSError* error;
+    NSError* error = nil;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
-    if (fetchResults == nil) {
+    if (error) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -63,9 +63,9 @@
     
     request.predicate = [NSPredicate predicateWithFormat:@"identifier LIKE %@", convoIdentifier];
     
-    NSError* error;
+    NSError* error = nil;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
-    if (fetchResults == nil) {
+    if (error) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -87,9 +87,9 @@
     
     request.predicate = [NSPredicate predicateWithFormat:@"identifier LIKE %@", messageIdentifier];
     
-    NSError* error;
+    NSError* error = nil;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
-    if (fetchResults == nil) {
+    if (error) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -120,9 +120,9 @@
     
     request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"createdDate" ascending:NO]];
     
-    NSError* error;
+    NSError* error = nil;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
-    if (fetchResults == nil) {
+    if (error) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -151,9 +151,9 @@
     
     request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"lastMessage.createdDate" ascending:NO]];
     
-    NSError* error;
+    NSError* error = nil;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
-    if (fetchResults == nil) {
+    if (error) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -194,9 +194,9 @@
     
     request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"lastMessage.createdDate" ascending:NO]];
     
-    NSError* error;
+    NSError* error = nil;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
-    if (fetchResults == nil) {
+    if (error) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -216,26 +216,26 @@
     
     if (convoKind == ConversationKindAll) {
         if (messageKind == MessageKindAll) {
-            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", ConversationKindUndefined, userIdentifiers];
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (SUBQUERY(participantIdentifiers.identifier, $pid, $pid IN %@).@count = %d)", ConversationKindUndefined, userIdentifiers, userIdentifiers.count];
         }
         else {
-            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@) and (parentMessage.kind = %i)", ConversationKindUndefined, userIdentifiers, messageKind];
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind != %i) and (parentConversation = NULL) and (SUBQUERY(participantIdentifiers.identifier, $pid, $pid IN %@).@count = %d) and (parentMessage.kind = %i)", ConversationKindUndefined, userIdentifiers, userIdentifiers.count, messageKind];
         }
     }
     else {
         if (messageKind == MessageKindAll) {
-            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", convoKind, userIdentifiers];
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (SUBQUERY(participantIdentifiers.identifier, $pid, $pid IN %@).@count = %d)", convoKind, userIdentifiers, userIdentifiers.count];
         }
         else {
-            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@) and (parentMessage.kind = %i)", convoKind, userIdentifiers, messageKind];
+            request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (SUBQUERY(participantIdentifiers.identifier, $pid, $pid IN %@).@count = %d) and (parentMessage.kind = %i)", convoKind, userIdentifiers, userIdentifiers.count, messageKind];
         }
     }
     
     request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"lastMessage.createdDate" ascending:NO]];
     
-    NSError* error;
+    NSError* error = nil;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
-    if (fetchResults == nil) {
+    if (error) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -274,9 +274,9 @@
     
     request.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"createdDate" ascending:NO]];
     
-    NSError* error;
+    NSError* error = nil;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
-    if (fetchResults == nil) {
+    if (error) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -294,11 +294,15 @@
     
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
-    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", ConversationKindChat, participantIds];
+    // http://stackoverflow.com/questions/5302611/how-to-use-the-all-aggregate-operation-in-a-nspredicate-to-filter-a-coredata-b
+    // [NSPredicate predicateWithFormat:@"ALL entryTags IN %@", selectedTags];
+    // [NSPredicate predicateWithFormat:@"SUBQUERY(entryTags, $tag, $tag IN %@).@count = %d", selectedTags, [selectedTags count]];
+//    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", ConversationKindChat, participantIds];
+    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (SUBQUERY(participantIdentifiers.identifier, $pid, $pid IN %@).@count = %d)", ConversationKindChat, participantIds, participantIds.count];
     
-    NSError* error;
+    NSError* error = nil;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
-    if (fetchResults == nil) {
+    if (error) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -318,9 +322,9 @@
     
     request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation.identifier = %@) and (parentMessage.identifier = %@)", ConversationKindMoment, parentConversationIdentifier, parentMessageIdentifier];
     
-    NSError* error;
+    NSError* error = nil;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
-    if (fetchResults == nil) {
+    if (error) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -338,11 +342,11 @@
     
     NSFetchRequest* request = [[NSFetchRequest alloc] initWithEntityName:@"Conversation"];
     
-    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (ALL participantIdentifiers.identifier IN %@)", ConversationKindSidebar, parentConversationIdentifier, audienceIds];
+    request.predicate = [NSPredicate predicateWithFormat:@"(removed = FALSE) and (kind = %i) and (parentConversation = NULL) and (SUBQUERY(participantIdentifiers.identifier, $pid, $pid IN %@).@count = %d)", ConversationKindSidebar, parentConversationIdentifier, audienceIds, audienceIds.count];
     
-    NSError* error;
+    NSError* error = nil;
     NSArray* fetchResults = [self.managedObjectContext executeFetchRequest:request error:&error];
-    if (fetchResults == nil) {
+    if (error) {
         // Replace this implementation with code to handle the error appropriately.
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);

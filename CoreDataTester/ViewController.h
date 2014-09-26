@@ -10,7 +10,14 @@
 
 @interface ViewController : UIViewController
 
-- (IBAction)sendMessage:(id)sender;
+- (IBAction)deauthenticate:(id)sender;
+
+- (IBAction)authenticateAndListen:(id)sender;
+
+- (IBAction)beginTesting:(id)sender;
+
+- (IBAction)wipeDB:(id)sender;
+
 
 
 

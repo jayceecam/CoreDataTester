@@ -16,7 +16,14 @@
     
     AFHTTPRequestOperationManager *manager = [self.class manager];
     
-    NSDictionary* params = @{@"nonce": nonce};
+    NSDictionary* params = nil;
+    
+    if (_userIdOverride) {
+        params = @{@"nonce": nonce, @"layer_id": _userIdOverride};
+    }
+    else {
+        params = @{@"nonce": nonce};
+    }
     
     return [manager POST:self.authUrl parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
         if (block) block(responseObject[@"response"][@"identity"], nil);

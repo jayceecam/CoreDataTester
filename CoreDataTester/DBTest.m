@@ -69,6 +69,7 @@
     Conversation* conversation = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
     conversation.identifier = [NSString stringWithFormat:@"cid_%i", 0];
     conversation.kind = @(ConversationKindChat);
+    conversation.createdDate = [NSDate date];
     
     Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     message.identifier = [NSString stringWithFormat:@"mid_%i", 0];
@@ -96,6 +97,7 @@
     Conversation* chat = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
     chat.identifier = @"t1.c1";
     chat.kind = @(ConversationKindChat);
+    chat.createdDate = [NSDate date];
     
     message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     message.identifier = @"t1.m1";
@@ -118,6 +120,7 @@
     Conversation* thread = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
     thread.identifier = @"t1.c2";
     thread.kind = @(ConversationKindMoment);
+    thread.createdDate = [NSDate date];
     
     message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     message.identifier = @"t1.m2";
@@ -275,6 +278,7 @@
     Conversation* childConvo = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
     childConvo.identifier = @"t1.c3";
     childConvo.kind = @(ConversationKindChat);
+    childConvo.createdDate = [NSDate date];
     
     Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     message.identifier = @"t1.m3";
@@ -327,6 +331,7 @@
             Conversation* conversation = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
             conversation.identifier = [NSString stringWithFormat:@"cid_%i", i];
             conversation.kind = @(ConversationKindChat);
+            conversation.createdDate = [NSDate date];
             
             Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
             message.identifier = [NSString stringWithFormat:@"mid_%i", i];

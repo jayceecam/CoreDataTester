@@ -17,7 +17,6 @@
 		200DEAC219BE1DAE001D1E2F /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 200DEAC119BE1DAE001D1E2F /* Message.m */; };
 		200DEAC819BE22E7001D1E2F /* CoreDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 200DEAC719BE22E7001D1E2F /* CoreDataStore.m */; };
 		206E587519C7B1610036F07C /* LayerDataAssembler.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E587419C7B1610036F07C /* LayerDataAssembler.m */; };
-		206E587819C7B2A80036F07C /* CoreDataWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E587719C7B2A80036F07C /* CoreDataWriter.m */; };
 		206E587F19C895DC0036F07C /* EmbedlyAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E587E19C895DC0036F07C /* EmbedlyAPI.m */; };
 		206E588419C897DF0036F07C /* EmbedlyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E588319C897DF0036F07C /* EmbedlyTest.m */; };
 		206E588719C8AF6E0036F07C /* Link.m in Sources */ = {isa = PBXBuildFile; fileRef = 206E588619C8AF6E0036F07C /* Link.m */; };
@@ -81,8 +80,6 @@
 		200DEAC719BE22E7001D1E2F /* CoreDataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CoreDataStore.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		206E587319C7B1610036F07C /* LayerDataAssembler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = LayerDataAssembler.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		206E587419C7B1610036F07C /* LayerDataAssembler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = LayerDataAssembler.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		206E587619C7B2A80036F07C /* CoreDataWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataWriter.h; sourceTree = "<group>"; };
-		206E587719C7B2A80036F07C /* CoreDataWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataWriter.m; sourceTree = "<group>"; };
 		206E587D19C895DC0036F07C /* EmbedlyAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmbedlyAPI.h; sourceTree = "<group>"; };
 		206E587E19C895DC0036F07C /* EmbedlyAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmbedlyAPI.m; sourceTree = "<group>"; };
 		206E588319C897DF0036F07C /* EmbedlyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmbedlyTest.m; sourceTree = "<group>"; };
@@ -295,8 +292,6 @@
 				20C37ABD19C616CD00E00E7C /* LayerAPI.m */,
 				200DEAC619BE22E7001D1E2F /* CoreDataStore.h */,
 				200DEAC719BE22E7001D1E2F /* CoreDataStore.m */,
-				206E587619C7B2A80036F07C /* CoreDataWriter.h */,
-				206E587719C7B2A80036F07C /* CoreDataWriter.m */,
 				20AA383519D359E800580981 /* ConversationDataSource.h */,
 				20AA383619D359E800580981 /* ConversationDataSource.m */,
 			);
@@ -487,7 +482,6 @@
 				20C37ABE19C616CD00E00E7C /* LayerAPI.m in Sources */,
 				20AA383719D359E800580981 /* ConversationDataSource.m in Sources */,
 				2087033219BF87B70070E9B3 /* User.m in Sources */,
-				206E587819C7B2A80036F07C /* CoreDataWriter.m in Sources */,
 				206E587F19C895DC0036F07C /* EmbedlyAPI.m in Sources */,
 				206E58A019CA03B20036F07C /* Meta.m in Sources */,
 				20AA383419D34C1100580981 /* Whisper.m in Sources */,

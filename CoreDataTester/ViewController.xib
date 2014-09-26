@@ -16,10 +16,40 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RjB-Z7-LsK">
-                    <rect key="frame" x="137" y="443" width="46" height="30"/>
-                    <state key="normal" title="Button">
+                    <rect key="frame" x="137" y="360" width="87" height="30"/>
+                    <state key="normal" title="Authenticate">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
+                    <connections>
+                        <action selector="authenticateAndListen:" destination="-1" eventType="touchUpInside" id="rhc-Vm-iVF"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wHT-Hv-8lG">
+                    <rect key="frame" x="137" y="398" width="30" height="30"/>
+                    <state key="normal" title="Test">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="beginTesting:" destination="-1" eventType="touchUpInside" id="kIM-m6-aeK"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vxs-cX-wht">
+                    <rect key="frame" x="137" y="322" width="104" height="30"/>
+                    <state key="normal" title="Deauthenticate">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="deauthenticate:" destination="-1" eventType="touchUpInside" id="F9Z-M1-O5s"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I8L-7n-Xkm">
+                    <rect key="frame" x="137" y="436" width="61" height="30"/>
+                    <state key="normal" title="Wipe DB">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="wipeDB:" destination="-1" eventType="touchUpInside" id="lQj-o9-OlB"/>
+                    </connections>
                 </button>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>

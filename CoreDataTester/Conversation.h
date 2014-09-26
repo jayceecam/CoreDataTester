@@ -38,6 +38,8 @@ typedef enum : NSUInteger {
 
 @property(strong,nonatomic) NSNumber* removed;
 
+@property(strong,nonatomic) NSDate* createdDate;
+
 
 
 @property(strong,nonatomic) Conversation* parentConversation;

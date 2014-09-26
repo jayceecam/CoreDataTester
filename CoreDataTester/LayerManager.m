@@ -11,6 +11,18 @@
 #import "CoreDataStore.h"
 
 
+NSString *const ConversationDidChangeNotification = @"ConversationDidChangeNotification";
+
+NSString *const ConversationObjectKey = @"ConversationObjectKey";
+
+NSString *const ChangedObjectKey = @"ChangedObjectKey";
+
+NSString *const ChangeTypeKey = @"ChangeTypeKey";
+
+NSString *const ChangePropertyKey = @"ChangePropertyKey";
+NSString *const ChangeOldValueKey = @"ChangeOldValueKey";
+NSString *const ChangeNewValueKey = @"ChangeNewValueKey";
+
 
 @interface LayerManager ()
 
@@ -19,7 +31,6 @@
 @property(strong,nonatomic) LayerDataProcessor* dataProcessor;
 @property(strong,nonatomic) LayerDataAssembler* dataAssembler;
 @property(strong,nonatomic) CoreDataStore* dataStore;
-//@property(strong,nonatomic) CoreDataWriter* dataWriter;
 
 @property(assign,nonatomic) BOOL authenticating;
 
@@ -30,7 +41,7 @@
 @implementation LayerManager
 
 
-- (id)init {
+- (id)initWithContext:(NSManagedObjectContext*)context {
     self = [super init];
     if (self) {
         NSUUID *appID = [[NSUUID alloc] initWithUUIDString:@"2ed63e76-2c84-11e4-a2c3-8edc000001f6"];
@@ -45,19 +56,13 @@
         _dataProcessor.dataStore = _dataStore;
         _dataProcessor.client = _client;
         
+        _dataAssembler.client = _client;
+        
+        self.managedObjectContext = context;
+        
         [self connect];
     }
     return self;
-}
-
-- (void)registerObjectObservation {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
-                                                 name:LYRClientObjectsDidChangeNotification object:_client];
-}
-
-- (void)unregisterObjectObservation {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:LYRClientObjectsDidChangeNotification object:_client];
 }
 
 
@@ -68,6 +73,7 @@
     _managedObjectContext = managedObjectContext;
     _dataStore.managedObjectContext = managedObjectContext;
     _dataProcessor.managedObjectContext = managedObjectContext;
+    _dataAssembler.managedObjectContext = managedObjectContext;
 }
 
 - (void)connect {
@@ -121,6 +127,10 @@
     }
 }
 
+- (void)resync {
+    
+}
+
 - (void)obtainIdentityTokenWithNonce:(NSString*)nonce completion:(void(^)(NSString* identitiyToken, NSError*error))block {
     [_layerAPI authenticateWithNonce:nonce block:block];
 }
@@ -130,51 +140,58 @@
 
 // Hydrates Conversation objects' internal LYRMessages and LYRConversation
 - (void)hydrateConversations:(NSArray*)conversations {
-    if (conversations.count) {
-        // Hydrate LYRConversations
-        NSMapTable* identifierToObjectLookup = [NSMapTable weakToWeakObjectsMapTable];
-        NSMutableSet* conversationIds = [NSMutableSet setWithCapacity:conversations.count];
-        
-        NSMutableArray* messages = [NSMutableArray arrayWithCapacity:conversations.count * 2];
-        for (Conversation* c in conversations) {
-            [conversationIds addObject:c.identifier];
-            [identifierToObjectLookup setValue:c forKey:c.identifier];
+    @autoreleasepool {
+        if (conversations.count) {
+            // Hydrate LYRConversations
+            NSMapTable* identifierToObjectLookup = [NSMapTable weakToWeakObjectsMapTable];
+            NSMutableSet* conversationIds = [NSMutableSet setWithCapacity:conversations.count];
             
-            if (c.lastMessage) {
-                [messages addObject:c.lastMessage];
+            NSMutableArray* messages = [NSMutableArray arrayWithCapacity:conversations.count * 2];
+            for (Conversation* c in conversations) {
+                [conversationIds addObject:[NSURL URLWithString:c.identifier]];
+                [identifierToObjectLookup setObject:c forKey:c.identifier];
+                
+                if (c.messageMeta) {
+                    [messages addObject:c.messageMeta];
+                }
+                if (c.lastMessage) {
+                    [messages addObject:c.lastMessage];
+                }
+                if (c.parentMessage) {
+                    [messages addObject:c.parentMessage];
+                }
             }
-            if (c.parentMessage) {
-                [messages addObject:c.parentMessage];
+            
+            NSSet* lyrConversations = [_client conversationsForIdentifiers:conversationIds.copy];
+            
+            for (LYRConversation* c in lyrConversations.allObjects) {
+                Conversation* cRef = [identifierToObjectLookup objectForKey:c.identifier.absoluteString];
+                cRef.lyrConversation = c;
             }
+            
+            // Hydrate LYRMessages for lastMessage and parentMessage
+            [self hydrateMessages:messages.copy];
         }
-        
-        NSSet* lyrConversations = [_client conversationsForIdentifiers:conversationIds.copy];
-        
-        for (LYRConversation* c in lyrConversations.allObjects) {
-            Conversation* cRef = [identifierToObjectLookup objectForKey:c.identifier.absoluteString];
-            cRef.lyrConversation = c;
-        }
-        
-        // Hydrate LYRMessages for lastMessage and parentMessage
-        [self hydrateMessages:messages.copy];
     }
 }
 
 // Hydrates Message objects' internal LYRMessages
 - (void)hydrateMessages:(NSArray*)messages {
-    NSMapTable* identifierToObjectLookup = [NSMapTable weakToWeakObjectsMapTable];
-    NSMutableSet* messageIds = [NSMutableSet setWithCapacity:messages.count];
-    
-    for (Message* m in messages) {
-        [messageIds addObject:m.identifier];
-        [identifierToObjectLookup setValue:m forKey:m.identifier];
-    }
-    
-    NSSet* lyrMesages = [_client messagesForIdentifiers:messageIds.copy];
-    
-    for (LYRMessage* m in lyrMesages.allObjects) {
-        Message* mRef = [identifierToObjectLookup objectForKey:m.identifier.absoluteString];
-        mRef.lyrMessage = m;
+    @autoreleasepool {
+        NSMapTable* identifierToObjectLookup = [NSMapTable weakToWeakObjectsMapTable];
+        NSMutableSet* messageIds = [NSMutableSet setWithCapacity:messages.count];
+        
+        for (Message* m in messages) {
+            [messageIds addObject:[NSURL URLWithString:m.identifier]];
+            [identifierToObjectLookup setObject:m forKey:m.identifier];
+        }
+        
+        NSSet* lyrMesages = [_client messagesForIdentifiers:messageIds.copy];
+        
+        for (LYRMessage* m in lyrMesages.allObjects) {
+            Message* mRef = [identifierToObjectLookup objectForKey:m.identifier.absoluteString];
+            mRef.lyrMessage = m;
+        }
     }
 }
 
@@ -187,11 +204,26 @@
     if (block) block(fetchedResults, nil);
 }
 
+- (void)getMessage:(NSString*)messageIdentifier completionBlock:(void(^)(Message* message, NSError* error))block {
+    Message* message = [_dataStore getMessage:messageIdentifier];
+    if (message) {
+        [self hydrateMessages:@[message]];
+        if (block) block(message, nil);
+    }
+    else {
+        // possibly check for existing LYRMessage
+    }
+    if (block) block(nil, nil);
+}
+
 - (void)getConversation:(NSString*)convoIdentifier completionBlock:(void(^)(Conversation* converasation, NSError* error))block {
     Conversation* conversation = [_dataStore getConversation:convoIdentifier];
     if (conversation) {
         [self hydrateConversations:@[conversation]];
         if (block) block(conversation, nil);
+    }
+    else {
+        // possibly check for existing LYRConversation
     }
     if (block) block(nil, nil);
 }
@@ -217,26 +249,54 @@
 
 #pragma mark - Write
 
+- (BOOL)_sendMessage:(Message*)message forConversation:(Conversation*)conversation kind:(NSString*)kind completionBlock:(void(^)(Message* message, NSError* error))block {
+    
+    NSAssert(conversation.messageMeta, @"conversation %@ does not have a meta object", conversation);
+    
+    NSError* error = nil;
+    
+    if (!conversation.messageMeta.lyrMessage.identifier) {
+        if (![_client sendMessage:conversation.messageMeta.lyrMessage error:&error]) {
+            [self error:[NSString stringWithFormat:@"%@ conversation meta send", kind] error:error messageCompletionBlock:block];
+            return NO;
+        }
+        
+        conversation.messageMeta.identifier = conversation.messageMeta.lyrMessage.identifier.absoluteString;
+        conversation.messageMeta.conversation.identifier = conversation.messageMeta.lyrMessage.conversation.identifier.absoluteString;
+        
+        conversation.lastMessage = conversation.messageMeta;
+        conversation.parentConversation.lastMessage = conversation.messageMeta;
+    }
+    
+    if (message) {
+        if (![_client sendMessage:message.lyrMessage error:&error]) {
+            [self error:[NSString stringWithFormat:@"%@ send", kind] error:error messageCompletionBlock:block];
+            return NO;
+        }
+        
+        conversation.lastMessage = message;
+        conversation.parentConversation.lastMessage = message;
+        
+        message.identifier = message.lyrMessage.identifier.absoluteString;
+        message.conversation.identifier = message.lyrMessage.conversation.identifier.absoluteString;
+    }
+    
+    
+    if (![self.managedObjectContext save:&error]) {
+        [self error:[NSString stringWithFormat:@"%@ save", kind] error:error messageCompletionBlock:block];
+        return NO;
+    }
+    
+    if (block) block(message, nil);
+    
+    return YES;
+}
+
 - (void)sendPlainMessage:(NSString*)body inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
     
     Message* message = [_dataAssembler assembleMessageFromPlainText:body forConversation:conversation];
     
-    NSError* error = nil;
-    
-    if (![_client sendMessage:message.lyrMessage error:&error]) {
-        [self error:@"message send" error:error messageCompletionBlock:block];
-        return;
-    }
-    
-    conversation.lastMessage = message;
-    conversation.parentConversation.lastMessage = message;
-    
-    if (![self.managedObjectContext save:&error]) {
-        [self error:@"message save" error:error messageCompletionBlock:block];
-        return;
-    }
-    
-    if (block) block(message, nil);
+    [self _sendMessage:message forConversation:conversation kind:@"plain" completionBlock:block];
 }
 
 - (void)sendWhisperMessage:(Whisper*)whisper inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
@@ -245,161 +305,53 @@
     
     Message* message = [_dataAssembler assembleMessageFromWhisper:whisper forConversation:conversation];
     
-    NSError* error = nil;
-    
-    if (![_client sendMessage:message.lyrMessage error:&error]) {
-        [self error:@"message send" error:error messageCompletionBlock:block];
-        return;
-    }
-    
-    conversation.lastMessage = message;
-    conversation.parentConversation.lastMessage = message;
-    
-    if (![self.managedObjectContext save:&error]) {
-        [self error:@"message save" error:error messageCompletionBlock:block];
-        return;
-    }
-    
-    if (block) block(message, nil);
+    [self _sendMessage:message forConversation:conversation kind:@"whisper" completionBlock:block];
 }
 
 - (void)sendLinkMessage:(Link*)link inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
     
     Message* message = [_dataAssembler assembleMessageFromLink:link forConversation:conversation];
     
-    NSError* error = nil;
-    
-    if (![_client sendMessage:message.lyrMessage error:&error]) {
-        [self error:@"link send" error:error messageCompletionBlock:block];
-        return;
-    }
-    
-    conversation.lastMessage = message;
-    conversation.parentConversation.lastMessage = message;
-    
-    if (![self.managedObjectContext save:&error]) {
-        [self error:@"link save" error:error messageCompletionBlock:block];
-        return;
-    }
-    
-    if (block) block(message, nil);
+    [self _sendMessage:message forConversation:conversation kind:@"link" completionBlock:block];
 }
 
 - (void)sendSongMessage:(Song*)song inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
     
     Message* message = [_dataAssembler assembleMessageFromSong:song forConversation:conversation];
     
-    NSError* error = nil;
-    
-    if (![_client sendMessage:message.lyrMessage error:&error]) {
-        [self error:@"song send" error:error messageCompletionBlock:block];
-        return;
-    }
-    
-    conversation.lastMessage = message;
-    conversation.parentConversation.lastMessage = message;
-    
-    if (![self.managedObjectContext save:&error]) {
-        [self error:@"song save" error:error messageCompletionBlock:block];
-        return;
-    }
-    
-    if (block) block(message, nil);
+    [self _sendMessage:message forConversation:conversation kind:@"song" completionBlock:block];
 }
 
 - (void)sendPictureMessage:(Picture*)picture inConversation:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
     
     Message* message = [_dataAssembler assembleMessageFromPicture:picture forConversation:conversation];
     
-    NSError* error = nil;
-    
-    if (![_client sendMessage:message.lyrMessage error:&error]) {
-        [self error:@"picture send" error:error messageCompletionBlock:block];
-        return;
-    }
-    
-    conversation.lastMessage = message;
-    conversation.parentConversation.lastMessage = message;
-    
-    if (![self.managedObjectContext save:&error]) {
-        [self error:@"picture save" error:error messageCompletionBlock:block];
-        return;
-    }
-    
-    if (block) block(message, nil);
+    [self _sendMessage:message forConversation:conversation kind:@"picture" completionBlock:block];
 }
 
 - (void)sendLike:(Like*)like inConverstaion:(Conversation*)conversation completionBlock:(void(^)(Message* message, NSError* error))block {
     
     Message* message = [_dataAssembler assembleMessageFromLike:like forConversation:conversation];
     
-    NSError* error = nil;
-    
-    if (![_client sendMessage:message.lyrMessage error:&error]) {
-        [self error:@"like send" error:error messageCompletionBlock:block];
-        return;
-    }
-    
-    conversation.lastMessage = message;
-    conversation.parentConversation.lastMessage = message;
-    
-    if (![self.managedObjectContext save:&error]) {
-        [self error:@"like save" error:error messageCompletionBlock:block];
-        return;
-    }
-    
-    if (block) block(message, nil);
+    [self _sendMessage:message forConversation:conversation kind:@"like" completionBlock:block];
 }
 
 - (void)sendSavedConversation:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block {
     
     NSAssert(conversation.kind.integerValue == ConversationKindMoment, @"cannot save a moment into a conversation that is not of type ConversationKindMoment");
     
-    NSError* error = nil;
-    
-    if (![_client sendMessage:conversation.messageMeta.lyrMessage error:&error]) {
-        [self error:@"save send" error:error successCompletionBlock:block];
-        return;
-    }
-    
-    conversation.lastMessage = conversation.messageMeta;
-    conversation.parentConversation.lastMessage = conversation.messageMeta;
-    
-    if (![self.managedObjectContext save:&error]) {
-        [self error:@"save save" error:error successCompletionBlock:block];
-        return;
-    }
-    
-    if (block) block(YES, nil);
+    [self _sendMessage:nil forConversation:conversation kind:@"moment" completionBlock:^(Message *message, NSError *error) {
+        if (block) block(!error, error);
+    }];
 }
 
 - (void)sendSavedConversation:(Conversation*)conversation withMessage:(NSString*)body completionBlock:(void(^)(BOOL success, NSError* error))block {
     
     NSAssert(conversation.kind.integerValue == ConversationKindMoment, @"cannot save a moment into a conversation that is not of type ConversationKindMoment");
     
-    NSError* error = nil;
-    
-    if (![_client sendMessage:conversation.messageMeta.lyrMessage error:&error]) {
-        [self error:@"save send" error:error successCompletionBlock:block];
-        return;
-    }
-    
-    Message* message = [_dataAssembler assembleMessageFromPlainText:body forConversation:conversation];
-    
-    if (![_client sendMessage:message.lyrMessage error:&error]) {
-        [self error:@"comment send" error:error successCompletionBlock:block];
-        return;
-    }
-    
-    conversation.lastMessage = message;
-    conversation.parentConversation.lastMessage = message;
-    
-    if (![self.managedObjectContext save:&error]) {
-        [self error:@"save save" error:error successCompletionBlock:block];
-        return;
-    }
-    
-    if (block) block(YES, nil);
+    [self _sendMessage:nil forConversation:conversation kind:@"moment with message" completionBlock:^(Message *message, NSError *error) {
+        if (block) block(!error, error);
+    }];
 }
 
 - (void)markConversationAsRead:(Conversation*)conversation completionBlock:(void(^)(BOOL success, NSError* error))block {
@@ -450,6 +402,7 @@
     
     Conversation* conversation = [_dataStore getChatWithParticipants:participantIds];
     if (conversation) {
+        [self hydrateConversations:@[conversation]];
         return conversation;
     }
     else {
@@ -464,6 +417,7 @@
 
     Conversation* conversation = [_dataStore getMomentWithParentConversation:parentConversation.identifier parentMessage:parentMessage.identifier];
     if (conversation) {
+        [self hydrateConversations:@[conversation]];
         return conversation;
     }
     else {
@@ -480,6 +434,7 @@
     
     Conversation* conversation = [_dataStore getSidebarWithParentConversation:parentConversation.identifier audienceIds:participantIds];
     if (conversation) {
+        [self hydrateConversations:@[conversation]];
         return conversation;
     }
     else {
@@ -517,24 +472,24 @@
 #pragma mark - LayerDelegate
 
 - (void)layerClient:(LYRClient *)client didFinishSynchronizationWithChanges:(NSArray *)changes {
-    NSLog(@"Layer Client did finish synchronization");
+    NSLog(@"Layer Client did finish synchronization %@", changes);
     
     // TODO: always consider handling this sync on a new private queue
     // TODO: also ensure didReceiveLayerObjectsDidChangeNotification: is not also being called here
     
-    for (NSDictionary *change in changes) {
-        id changeObject = [change objectForKey:LYRObjectChangeObjectKey];
-        if ([changeObject isKindOfClass:[LYRConversation class]]) {
-            LYRConversation* conversation = changeObject;
-            LYRObjectChangeType changeType = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
-            [_dataProcessor processConversation:conversation changeType:changeType changes:change];
-        }
-        else {
-            LYRMessage* message = changeObject;
-            LYRObjectChangeType changeType = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
-            [_dataProcessor processMessage:message changeType:changeType changes:change];
-        }
-    }
+//    for (NSDictionary *change in changes) {
+//        id changeObject = [change objectForKey:LYRObjectChangeObjectKey];
+//        if ([changeObject isKindOfClass:[LYRConversation class]]) {
+//            LYRConversation* conversation = changeObject;
+//            LYRObjectChangeType changeType = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
+//            [_dataProcessor processConversation:conversation changeType:changeType changes:change];
+//        }
+//        else {
+//            LYRMessage* message = changeObject;
+//            LYRObjectChangeType changeType = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
+//            [_dataProcessor processMessage:message changeType:changeType changes:change];
+//        }
+//    }
 }
 
 - (void)layerClient:(LYRClient *)client didFailSynchronizationWithError:(NSError *)error {
@@ -566,29 +521,6 @@
 
 - (void)layerClientDidDeauthenticate:(LYRClient *)client {
     NSLog(@"layer client  did deauthenticate");
-}
-
-
-#pragma mark - Notification Observation
-
-- (void)didReceiveLayerObjectsDidChangeNotification:(NSNotification*)note {
-    NSLog(@"didReceiveLayerObjectsDidChangeNotification");
-    
-    NSArray *changes = [note.userInfo objectForKey:LYRClientObjectChangesUserInfoKey];
-    
-    for (NSDictionary *change in changes) {
-        id changeObject = [change objectForKey:LYRObjectChangeObjectKey];
-        if ([changeObject isKindOfClass:[LYRConversation class]]) {
-            LYRConversation* conversation = changeObject;
-            LYRObjectChangeType changeType = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
-            [_dataProcessor processConversation:conversation changeType:changeType changes:change];
-        }
-        else {
-            LYRMessage* message = changeObject;
-            LYRObjectChangeType changeType = (LYRObjectChangeType)[[change objectForKey:LYRObjectChangeTypeKey] integerValue];
-            [_dataProcessor processMessage:message changeType:changeType changes:change];
-        }
-    }
 }
 
 @end

@@ -9,15 +9,8 @@
 #import "LayerDataProcessor.h"
 
 #import "LayerDataAssembler.h"
+#import "LayerManager.h"
 
-
-NSString *const DataObjectChangeTypeKey = @"DataObjectChangeTypeKey";
-
-NSString *const DataObjectChangeObjectKey = @"DataObjectChangeObjectKey";
-
-NSString *const DataObjectChangePropertyKey = @"DataObjectChangePropertyKey";
-NSString *const DataObjectChangeOldValueKey = @"DataObjectChangeOldValueKey";
-NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
 
 
 @implementation LayerDataProcessor
@@ -31,7 +24,9 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
 }
 
 - (Conversation*)processConversation:(LYRConversation*)lyrConversation changeType:(LYRObjectChangeType)changeType changes:(NSDictionary*)changes {
+    NSLog(@"processing conversation %@ type %li", lyrConversation.identifier.absoluteString, changeType);
     Conversation* conversation = nil;
+    NSMutableDictionary* notifInfo = @{}.mutableCopy;
     
     switch (changeType) {
         case LYRObjectChangeTypeCreate: {
@@ -44,6 +39,7 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
                 conversation = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
                 conversation.identifier = lyrConversation.identifier.absoluteString;
                 conversation.removed = @(lyrConversation.isDeleted);
+                conversation.createdDate = [NSDate date];
                 conversation.lyrConversation = lyrConversation;
                 
                 for (NSString* pid in lyrConversation.participants) {
@@ -55,22 +51,31 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
                 // TODO: determine if messages (the meta and lastMessage particularly) are available here or if we need to wait for processMessage
                 //       assuming for now these messages will be sync'd later after this is processed
             }
+            notifInfo[ConversationObjectKey] = conversation;
+            notifInfo[ChangedObjectKey] = conversation;
+            notifInfo[ChangeTypeKey] = @(ChangeTypeCreate);
             break;
         }
         case LYRObjectChangeTypeUpdate: {
             NSString* changeKey = changes[LYRObjectChangePropertyKey];
             NSLog(@"LYRConversation property %@ changed from %@ to %@", changeKey, changes[LYRObjectChangeOldValueKey], changes[LYRObjectChangeNewValueKey]);
             
-            conversation = [_dataStore getConversation:lyrConversation.identifier.absoluteString];
+            if ([changeKey isEqualToString:@"identifier"]) {
+                conversation = [_dataStore getConversation:[changes[LYRObjectChangeOldValueKey] absoluteString]];
+            }
+            else {
+                conversation = [_dataStore getConversation:lyrConversation.identifier.absoluteString];
+            }
+            
             if (conversation) {
                 if ([changeKey isEqualToString:@"identifier"]) {
-                    
+                    conversation.identifier = lyrConversation.identifier.absoluteString;
                 }
                 if ([changeKey isEqualToString:@"participants"]) {
                     
                 }
                 if ([changeKey isEqualToString:@"createdAt"]) {
-                    
+                    conversation.createdDate = lyrConversation.createdAt;
                 }
                 if ([changeKey isEqualToString:@"lastMessage"]) {
                     Message* lastMessage = [_dataStore getMessage:lyrConversation.lastMessage.identifier.absoluteString];
@@ -86,6 +91,13 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
                 }
                 
                 conversation.lyrConversation = lyrConversation;
+                
+                notifInfo[ConversationObjectKey] = conversation;
+                notifInfo[ChangedObjectKey] = conversation;
+                notifInfo[ChangeTypeKey] = @(ChangeTypeUpdate);
+                notifInfo[ChangePropertyKey] = changeKey;
+                notifInfo[ChangeOldValueKey] = changes[LYRObjectChangeOldValueKey];
+                notifInfo[ChangeNewValueKey] = changes[LYRObjectChangeNewValueKey];
             }
             else {
                 // this shouldn't really happen often because these changes should have been previously sync'd in a LYRObjectChangeTypeCreate callback
@@ -96,6 +108,7 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
                 conversation = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
                 conversation.identifier = lyrConversation.identifier.absoluteString;
                 conversation.removed = @(lyrConversation.isDeleted);
+                conversation.createdDate = [NSDate date];
                 conversation.lyrConversation = lyrConversation;
                 
                 for (NSString* pid in lyrConversation.participants) {
@@ -103,6 +116,10 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
                     participantId.identifier = pid;
                     participantId.conversation = conversation;
                 }
+                
+                notifInfo[ConversationObjectKey] = conversation;
+                notifInfo[ChangedObjectKey] = conversation;
+                notifInfo[ChangeTypeKey] = @(ChangeTypeCreate);
             }
             break;
         }
@@ -111,6 +128,10 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
             if (conversation) {
                 [self.managedObjectContext deleteObject:conversation];
             }
+            
+            notifInfo[ConversationObjectKey] = conversation;
+            notifInfo[ChangedObjectKey] = conversation;
+            notifInfo[ChangeTypeKey] = @(ChangeTypeCreate);
             break;
         }
     }
@@ -122,13 +143,18 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
         return nil;
     }
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:<#(NSString *)#> object:<#(id)#> userInfo:<#(NSDictionary *)#>]
+    [[NSNotificationCenter defaultCenter] postNotificationName:ConversationDidChangeNotification object:conversation userInfo:notifInfo.copy];
+    if (conversation.parentConversation) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:ConversationDidChangeNotification object:conversation.parentConversation userInfo:notifInfo.copy];
+    }
     
     return conversation;
 }
 
 - (Message*)processMessage:(LYRMessage*)lyrMessage changeType:(LYRObjectChangeType)changeType changes:(NSDictionary*)changes {
+    NSLog(@"processing message %@ type %li", lyrMessage.identifier.absoluteString, changeType);
     Message* message = nil;
+    NSMutableDictionary* notifInfo = @{}.mutableCopy;
     
     switch (changeType) {
         case LYRObjectChangeTypeCreate: {
@@ -138,7 +164,7 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
                 message.lyrMessage = lyrMessage;
             }
             else {
-                Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
+                message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
                 message.identifier = lyrMessage.identifier.absoluteString;
                 message.removed = @(lyrMessage.isDeleted);
                 message.lyrMessage = lyrMessage;
@@ -152,6 +178,10 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
                 
                 [self postProcessMessage:message];
             }
+            
+            notifInfo[ConversationObjectKey] = message.conversation;
+            notifInfo[ChangedObjectKey] = message;
+            notifInfo[ChangeTypeKey] = @(ChangeTypeCreate);
             break;
         }
         case LYRObjectChangeTypeUpdate: {
@@ -159,45 +189,57 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
             NSString* changeKey = changes[LYRObjectChangePropertyKey];
             NSLog(@"LYRMessage property %@ changed from %@ to %@", changeKey, changes[LYRObjectChangeOldValueKey], changes[LYRObjectChangeNewValueKey]);
             
-            message = [_dataStore getMessage:lyrMessage.identifier.absoluteString];
+            if ([changeKey isEqualToString:@"identifier"]) {
+                message = [_dataStore getMessage:[changes[LYRObjectChangeOldValueKey] absoluteString]];
+            }
+            else {
+                message = [_dataStore getMessage:lyrMessage.identifier.absoluteString];
+            }
             
             if (message) {
                 if ([changeKey isEqualToString:@"identifier"]) {
-                    
+                    message.identifier = lyrMessage.identifier.absoluteString;
                 }
                 if ([changeKey isEqualToString:@"index"]) {
-                    
+                    // ignore
                 }
                 if ([changeKey isEqualToString:@"conversation"]) {
-                    
+                    // ignore
                 }
                 if ([changeKey isEqualToString:@"parts"]) {
-                    
+                    // ignore
                 }
                 if ([changeKey isEqualToString:@"isSent"]) {
-                    
+                    // ignore
                 }
                 if ([changeKey isEqualToString:@"isDeleted"]) {
                     message.removed = @(lyrMessage.isDeleted);
                 }
                 if ([changeKey isEqualToString:@"sentAt"]) {
-                    
+                    message.createdDate = lyrMessage.sentAt;
                 }
                 if ([changeKey isEqualToString:@"receivedAt"]) {
-                    
+                    // ignore
                 }
                 if ([changeKey isEqualToString:@"sentByUserID"]) {
-                    
+                    // ignore
                 }
                 if ([changeKey isEqualToString:@"recipientStatusByUserID"]) {
-                    
+                    // ignore
                 }
                 
                 message.lyrMessage = lyrMessage;
+                
+                notifInfo[ConversationObjectKey] = message.conversation;
+                notifInfo[ChangedObjectKey] = message;
+                notifInfo[ChangeTypeKey] = @(ChangeTypeUpdate);
+                notifInfo[ChangePropertyKey] = changeKey;
+                notifInfo[ChangeOldValueKey] = changes[LYRObjectChangeOldValueKey];
+                notifInfo[ChangeNewValueKey] = changes[LYRObjectChangeNewValueKey];
             }
             else {
                 NSLog(@"unable to find existing Message for UPDATE");
-                Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
+                message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
                 message.identifier = lyrMessage.identifier.absoluteString;
                 message.removed = @(lyrMessage.isDeleted);
                 message.lyrMessage = lyrMessage;
@@ -209,7 +251,9 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
                 message.createdDate = lyrMessage.sentAt;
                 message.conversation = [_dataStore getConversation:lyrMessage.conversation.identifier.absoluteString];
                 
-                [self postProcessMessage:message];
+                notifInfo[ConversationObjectKey] = message.conversation;
+                notifInfo[ChangedObjectKey] = message;
+                notifInfo[ChangeTypeKey] = @(ChangeTypeCreate);
             }
             
             [self postProcessMessage:message];
@@ -221,6 +265,10 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
             if (message) {
                 [self.managedObjectContext deleteObject:message];
             }
+            
+            notifInfo[ConversationObjectKey] = message.conversation;
+            notifInfo[ChangedObjectKey] = message;
+            notifInfo[ChangeTypeKey] = @(ChangeTypeDelete);
             break;
         }
     }
@@ -230,6 +278,11 @@ NSString *const DataObjectChangeNewValueKey = @"DataObjectChangeNewValueKey";
     if (![self.managedObjectContext save:&error]) {
         [self error:@"process message" error:error];
         return nil;
+    }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:ConversationDidChangeNotification object:message.conversation userInfo:notifInfo.copy];
+    if (message.conversation.parentConversation) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:ConversationDidChangeNotification object:message.conversation.parentConversation userInfo:notifInfo.copy];
     }
     
     return message;

@@ -12,10 +12,44 @@
 #import "LayerAPI.h"
 #import "Data.h"
 #import "CoreDataStore.h"
-#import "CoreDataWriter.h"
 #import "LayerDataProcessor.h"
 #import "LayerDataAssembler.h"
 
+
+typedef NS_ENUM(NSInteger, ChangeType) {
+    ChangeTypeCreate,
+    ChangeTypeUpdate,
+    ChangeTypeDelete
+};
+
+
+/**
+ @abstract Posted when any objects for a conversation have changed due to synchronization activities.
+ @discussion The Notification object will always refer to the conversation in which this change has occured. These notifications
+ are posted for both the immediate conversation and then also for any parentConversation as well.
+ */
+extern NSString *const ConversationDidChangeNotification;
+
+/**
+ @abstract References the actual conversation object that has changed.
+ @discussion This is important when the conversation receiving the notification is actually monitoring for changes to the parentConversation.
+ */
+extern NSString *const ConversationObjectKey;
+
+/**
+ @abstract A key into a change dictionary for the object that has been created, updated or deleted.
+ */
+extern NSString *const ChangedObjectKey;
+
+/**
+ @abstract A key into a change dictionary describing the change type. @see `ChangeType` for possible types.
+ */
+extern NSString *const ChangeTypeKey;
+
+// Only applicable to `ChangeTypeUpdate`
+extern NSString *const ChangePropertyKey;
+extern NSString *const ChangeOldValueKey;
+extern NSString *const ChangeNewValueKey;
 
 
 
@@ -36,6 +70,8 @@
 @property(strong,nonatomic) NSManagedObjectContext* managedObjectContext;
 
 
+- (id)initWithContext:(NSManagedObjectContext*)context;
+
 
 #pragma mark - Public
 
@@ -45,6 +81,7 @@
 
 - (void)authenticate;
 
+- (void)resync;
 
 
 #pragma mark - Read

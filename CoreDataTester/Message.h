@@ -59,7 +59,7 @@ typedef NS_ENUM(NSUInteger, MessageKind) {
 
 @property(strong,nonatomic) LYRMessage* lyrMessage;
 
-
+@property(assign,nonatomic,readonly) BOOL isSent;
 
 
 

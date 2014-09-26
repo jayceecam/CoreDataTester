@@ -20,7 +20,7 @@
     
     Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     
-    message.identifier = msg.identifier.absoluteString;
+    message.lyrMessage = msg;
     message.creatorIdentifier = _client.authenticatedUserID;
     message.createdDate = [NSDate date];
     message.kind = @(MessageKindMessagePlain);
@@ -45,7 +45,7 @@
     
     Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     
-    message.identifier = msg.identifier.absoluteString;
+    message.lyrMessage = msg;
     message.creatorIdentifier = _client.authenticatedUserID;
     message.createdDate = [NSDate date];
     message.kind = @(MessageKindMessageWhisper);
@@ -70,7 +70,7 @@
     
     Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     
-    message.identifier = msg.identifier.absoluteString;
+    message.lyrMessage = msg;
     message.creatorIdentifier = _client.authenticatedUserID;
     message.createdDate = [NSDate date];
     message.kind = @(MessageKindContentLink);
@@ -95,7 +95,7 @@
     
     Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     
-    message.identifier = msg.identifier.absoluteString;
+    message.lyrMessage = msg;
     message.creatorIdentifier = _client.authenticatedUserID;
     message.createdDate = [NSDate date];
     message.kind = @(MessageKindContentSong);
@@ -120,7 +120,7 @@
     
     Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     
-    message.identifier = msg.identifier.absoluteString;
+    message.lyrMessage = msg;
     message.creatorIdentifier = _client.authenticatedUserID;
     message.createdDate = [NSDate date];
     message.kind = @(MessageKindContentPicture);
@@ -144,7 +144,7 @@
     
     Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     
-    message.identifier = msg.identifier.absoluteString;
+    message.lyrMessage = msg;
     message.creatorIdentifier = _client.authenticatedUserID;
     message.createdDate = [NSDate date];
     message.kind = @(MessageKindMeta);
@@ -168,7 +168,7 @@
     
     Message* message = (Message*)[NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:self.managedObjectContext];
     
-    message.identifier = msg.identifier.absoluteString;
+    message.lyrMessage = msg;
     message.creatorIdentifier = _client.authenticatedUserID;
     message.createdDate = [NSDate date];
     message.kind = @(MessageKindActivityLike);
@@ -356,9 +356,9 @@
     LYRConversation* lyrConversation = [LYRConversation conversationWithParticipants:participantIds];
     
     Conversation* conversation = (Conversation*)[NSEntityDescription insertNewObjectForEntityForName:@"Conversation" inManagedObjectContext:self.managedObjectContext];
-    conversation.identifier = lyrConversation.identifier.absoluteString;
     conversation.kind = meta.conversationKind;
     conversation.removed = @NO;
+    conversation.createdDate = [NSDate date];
     conversation.lyrConversation = lyrConversation;
     
     for (NSString* pid in participantIds) {

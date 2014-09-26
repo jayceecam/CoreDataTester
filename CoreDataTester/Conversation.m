@@ -13,22 +13,35 @@
 
 @implementation Conversation
 
-@dynamic identifier, kind, removed;
+@dynamic identifier, kind, removed, createdDate;
 
 @dynamic linkedConversations, parentConversation, messages, parentMessage, lastMessage, messageMeta;
 
 @dynamic participantIdentifiers;
 
+@synthesize lyrConversation;
+
 - (void)awakeFromInsert {
     [super awakeFromInsert];
     self.removed = @NO;
     self.kind = @(ConversationKindUndefined);
+    self.createdDate = [NSDate date];
 }
 
 - (BOOL)validateRemoved:(id *)ioValue error:(NSError **)outError {
     if (*ioValue == nil) {
         if (outError) {
             *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"removed must be non-NULL"}];
+        }
+        return NO;
+    }
+    return YES;
+}
+
+- (BOOL)validateCreatedDate:(id *)ioValue error:(NSError **)outError {
+    if (*ioValue == nil) {
+        if (outError) {
+            *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"createdDate must be non-NULL"}];
         }
         return NO;
     }
@@ -98,9 +111,9 @@
         }
         return NO;
     }
-    if ([*ioValue integerValue] < ConversationKindAll || [*ioValue integerValue] > ConversationKindSidebar) {
+    if ([*ioValue integerValue] == ConversationKindAll) {
         if (outError) {
-            *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"kind out of acceptable range"}];
+            *outError = [NSError errorWithDomain:kErrorDomainData code:0 userInfo:@{NSLocalizedDescriptionKey : @"kind can not be ConversationKindAll"}];
         }
         return NO;
     }
